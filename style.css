@@ -10,11 +10,6 @@
     font-family: 'Anton', sans-serif !important;
 }
 
-
-.pvn-logo{
-    height: 5vw;
-}
-
 .margin{
     margin-right:50px;
 }
@@ -72,7 +67,7 @@
 .carousel-item span p{
     margin-top: 6vh;
     margin-bottom: 8vh;
-    line-height: 24px;
+    line-height: 30px;
     font-size: 2.4vh;
 }
 
@@ -121,8 +116,21 @@ img[alt="boquet"]{
 
 @media screen and (max-width: 992px) {
 
+    .pvn-logo{
+        margin-left: 3px !important;
+    }
+
+    .nav-link{
+        font-size: 4vw !important;
+        border-bottom: 1px solid rgb(206, 206, 206);
+    }
+
     .carousel{
         height: 100vh;
+    }
+
+    .carousel-item span h1{
+        margin-top: -20px;
     }
 
     .carousel-item span{
@@ -142,27 +150,38 @@ img[alt="boquet"]{
         width: 80vw !important;
     }
 
-    .carousel-item img{
-        display: inline-block;
+    .carousel-item .carousel-image{
+        display: block;
         float: none;
         width: 70vw !important;
-        margin-right: 15vw !important;
+        height: 40vh;
+        margin: auto;
     }
 
-    img[alt="carousel-5"]{
-        margin-top: -10vh !important;
+    img[alt="carousel-1"]{
+        margin-top: -30px !important;
+        margin-bottom: 50px !important;
     }
 
     img[alt="carousel-2"]{
-        margin-top: -8vh !important;
+        margin-top: -140px !important;
+        margin-bottom: 50px !important;
     }
 
-    img[alt="boquet"]{
-        width: 40px !important;
-        height: 40px !important;
+    img[alt="carousel-3"]{
+        margin-bottom: 50px !important;
+        margin-top: 20px !important;
+    }
+
+    img[alt="carousel-4"]{
+        margin-top: 20px !important;
+        margin-bottom: 50px !important;
+    }
+
+    img[alt="carousel-5"]{
+        margin-top: -150px !important;
+        margin-bottom: 50px !important;
     }
 
 }
-.coming-soon-text{
-    font-family: 'Oswald', sans-serif !important;
-}
+
