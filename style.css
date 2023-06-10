@@ -1,0 +1,168 @@
+.photos{
+    background-color: rgb(240, 241, 255) !important;
+    text-align: center;
+    color: #990000;
+    border-radius: 15px;
+    font-size: 50px;
+}
+
+.anton{
+    font-family: 'Anton', sans-serif !important;
+}
+
+
+.pvn-logo{
+    height: 5vw;
+}
+
+.margin{
+    margin-right:50px;
+}
+
+.nav-link:hover{
+    color: rgb(217, 7, 0) !important;
+}
+
+.nav-link{
+    font-size: 1.7vw !important;
+    margin: auto 1vw;
+}
+
+.carousel, .carousel-inner{
+    background-color: #D3D3D3;
+    height: max-content !important;
+}
+
+.carousel-control-prev, .carousel-control-next{
+    width: 9%;
+}
+
+.carousel-item .carousel-image{
+    float:right;
+    margin-right: 10vw;
+    width: 40%;
+    height: 70vh;
+    margin-top: 8vh;
+}
+
+.carousel-item span{
+    float: left;
+    width: 35%;
+    margin-left: 10vw;
+    padding-top: 10vh;
+    height: 85vh;
+}
+
+.carousel-item span h1{
+    font-size: 6vh;
+    font-weight: 700;
+    font-family: ui-sans-serif, system-ui, -apple-system; 
+    margin-top: 5vh;
+    margin-bottom: 3vh; 
+    width: 25vw;
+}
+
+
+.carousel-item span h3{
+    font-size: 4vh;
+    font-weight: 500;
+    font-family: ui-sans-serif, system-ui, -apple-system !important; 
+}
+
+.carousel-item span p{
+    margin-top: 6vh;
+    margin-bottom: 8vh;
+    line-height: 24px;
+    font-size: 2.4vh;
+}
+
+.carousel-item span h5{
+    font-size: 3vh;
+}
+
+img[alt="boquet"]{
+    width: 40px;
+    height: 40px;
+}
+
+.congrats-text{
+    font-family: 'Great Vibes', cursive;
+    font-size: 4vh;
+    margin-bottom: 6vh;
+    margin-top: 4vh;
+}
+
+.see-more{
+    margin-top: 5vh;
+}
+
+#x{
+    margin: none;
+    padding: none;
+    width: 20vw;
+}
+
+.sports-acheivements{
+    margin: 1.3vh !important;
+    font-size: 2.2vh;
+}
+
+#iit{
+    width: 35vw;
+}
+
+.click{
+    margin-top: 10vh;
+}
+
+#gs{
+    width: max-content !important;
+}
+
+@media screen and (max-width: 992px) {
+
+    .carousel{
+        height: 100vh;
+    }
+
+    .carousel-item span{
+        display: inline-block;
+        float: none;
+        text-align: left;
+        margin:auto;
+        margin-left: 15vw;
+        width: 70vw;
+    }
+
+    .carousel-item span h1, #iit{
+        width: 80vw !important;
+    }
+
+    #gs{
+        width: 80vw !important;
+    }
+
+    .carousel-item img{
+        display: inline-block;
+        float: none;
+        width: 70vw !important;
+        margin-right: 15vw !important;
+    }
+
+    img[alt="carousel-5"]{
+        margin-top: -10vh !important;
+    }
+
+    img[alt="carousel-2"]{
+        margin-top: -8vh !important;
+    }
+
+    img[alt="boquet"]{
+        width: 40px !important;
+        height: 40px !important;
+    }
+
+}
+.coming-soon-text{
+    font-family: 'Oswald', sans-serif !important;
+}
