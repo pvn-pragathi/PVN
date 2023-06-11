@@ -129,7 +129,7 @@ img[alt="boquet"]{
 }
 
 
-.features-heading{
+.main-heading{
     text-align: center;
     margin: 6vh auto;
     color: rgb(59, 59, 218) !important;
@@ -154,17 +154,17 @@ img[alt="boquet"]{
 }
 
 .features-section div img{
-    height: 25vh;
+    height: 28vh;
     border-radius: 10px;
 }
 
-.features-section div h2, .features-heading{
+.features-section div h2, .main-heading{
     color: rgb(71, 71, 215);
     font-family: "Open Sans", sans-serif;
     font-weight: 500;
 }
 
-.features-heading{
+.main-heading{
     font-weight: 700;
 }
 
@@ -182,21 +182,17 @@ img[alt="boquet"]{
     }
 
     .nav-link{
-        font-size: 4vw !important;
+        font-size: 5vw !important;
         border-bottom: 1px solid rgb(206, 206, 206);
     }
 
-    .carousel-item span h1{
-        margin-top: -20px;
-    }
-
     .carousel-item span{
-        display: inline-block;
-        float: none;
+        display: block;
         text-align: left;
         margin:auto;
         margin-left: 15vw;
         width: 70vw;
+        margin-top: -10vh;
     }
 
     .carousel-item span h1, #iit{
@@ -214,6 +210,19 @@ img[alt="boquet"]{
         height: 40vh;
         margin: auto;
     }
+
+    .carousel-item span button{
+        margin-bottom: 5vh !important;
+    }
+
+    #clickhere{
+        margin-bottom: 5vh !important;
+    }
+
+    img[alt="carousel-3"]{
+        display: none !important;
+    }
+
 
     img[alt="carousel-1"]{
         margin-top: -30px !important;
@@ -245,14 +254,21 @@ img[alt="boquet"]{
         margin-right: 50px;
         margin: auto;
         margin-bottom: 3vh;
+        clear: right !important;
+        width: 70vw;
     }
 
     .feature-text-1, .feature-text-1{
         display: block;
+
     }
 
     .features-section div h2{
         display: block;
+    }
+
+    .carousel-item span{
+        height: max-content;
     }
         
 }
