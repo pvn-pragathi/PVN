@@ -240,5 +240,19 @@ img[alt="boquet"]{
         margin-bottom: 50px !important;
     }
 
-}
+    .feature-image-1, .feature-image-2{
+        display: block;
+        margin-right: 50px;
+        margin: auto;
+        margin-bottom: 3vh;
+    }
 
+    .feature-text-1, .feature-text-1{
+        display: block;
+    }
+
+    .features-section div h2{
+        display: block;
+    }
+        
+}
