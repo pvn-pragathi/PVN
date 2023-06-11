@@ -176,7 +176,7 @@ footer{
     text-decoration: none;
     font-size: 16px;
     padding: 5px 0;
-    
+    margin: auto 5px;
 }
 
 .footer-content a:hover {
@@ -191,7 +191,7 @@ footer{
 }
 
 .footer-bottom {
-    font-size: 12px;
+    font-size: 15px;
     color: #777;
 }
   
@@ -300,24 +300,45 @@ footer{
         display: block;
     }
 
+    .features-section div{
+        line-height: 1.5;
+    }
+
     .carousel-item span{
         height: max-content;
     }
+
+
         
 }
 .photos{
     font-family:'Oswald', sans-serif;
     text-align: center;
-    width: 15vmin;
-  height: 5vmin;
-  border: 0.8rem solid;
-  border-image: linear-gradient(0deg, #12c2e9, #c471ed, #f64f59) 1;
-  margin-right: auto;
-  margin-left: auto;
-  animation: 10s rotate linear infinite;
+    --angle: 0deg;
+    width: 50vmin;
+    height: 50vmin;
+    border: 0.8vmin solid;
+    border-image: linear-gradient(var(--angle), green, yellow) 1;
+    
+    animation: 10s rotate linear infinite;
+  }
+  
+  @keyframes rotate {
+    to {
+      --angle: 360deg;
+    }
+  }
+  
+  @property --angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+  }
+  
+  
 }
     
-}
+
      
    
 
