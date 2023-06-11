@@ -312,13 +312,17 @@ footer{
         
 }
 .photos{
+    font-size: 30px;
+    margin-right: auto;
+    margin-left: auto;
     font-family:'Oswald', sans-serif;
     text-align: center;
     --angle: 0deg;
-    width: 50vmin;
-    height: 50vmin;
+    width: 15vmin;
+    height: 5vmin;
     border: 0.8vmin solid;
-    border-image: linear-gradient(var(--angle), green, yellow) 1;
+    border-image: linear-gradient(var(--angle), rgb(112, 197, 247), rgb(144, 85, 223)) 1;
+    
     
     animation: 10s rotate linear infinite;
   }
