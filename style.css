@@ -166,32 +166,30 @@ footer{
     background-image: linear-gradient(120deg, #c2e9fb 0%, #a1c4fd 100%);
     text-align: center;
 }
-  
+
 .footer-content {
     margin-bottom: 20px;
 }
-  
+
 .footer-content a {
     color: #333;
     text-decoration: none;
     font-size: 16px;
     padding: 5px 0;
-    display: block;
-    margin-left: 25vw ;
     
 }
-  
+
 .footer-content a:hover {
     text-decoration: underline;
 }
-  
+
 .footer-content p {
     margin-bottom: 10px;
     font-size: 14px;
     width: 50vw;
     margin: auto;
 }
-  
+
 .footer-bottom {
     font-size: 12px;
     color: #777;
@@ -316,6 +314,8 @@ footer{
   border-image: linear-gradient(0deg, #12c2e9, #c471ed, #f64f59) 1;
   margin-right: auto;
   margin-left: auto;
+  animation: 10s rotate linear infinite;
+}
     
 }
      
