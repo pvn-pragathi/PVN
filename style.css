@@ -6,6 +6,10 @@
     font-size: 50px;
 }
 
+.body{
+    color: rgb(69, 62, 62)    ;
+}
+
 .anton{
     font-family: 'Anton', sans-serif !important;
 }
@@ -14,18 +18,27 @@
     margin-right:50px;
 }
 
-.nav-link:hover{
-    color: rgb(217, 7, 0) !important;
+nav, .navbar{
+    background-image: linear-gradient(120deg, #c2e9fb 0%, #a1c4fd 100%);
+}
+
+.dropdown-menu{
+    background-image: linear-gradient(120deg, #c2e9fb 0%, #a1c4fd 100%);
+}
+
+.nav-link:hover, .dropdown-item:hover{
+    color: #5c5c5c !important;
 }
 
 .nav-link{
     font-size: 1.7vw !important;
     margin: auto 1vw;
+    color: rgba(255, 255, 255, 0.85) !important;
 }
 
 .carousel, .carousel-inner{
-    background-color: #D3D3D3;
-    height: max-content !important;
+    background-image: linear-gradient(120deg, #c2e9fb 0%, #a1c4fd 100%);
+    min-height: 90vh ;
 }
 
 .carousel-control-prev, .carousel-control-next{
@@ -46,6 +59,7 @@
     margin-left: 10vw;
     padding-top: 10vh;
     height: 85vh;
+    color: #5c5c5c;
 }
 
 .carousel-item span h1{
@@ -61,7 +75,7 @@
 .carousel-item span h3{
     font-size: 4vh;
     font-weight: 500;
-    font-family: ui-sans-serif, system-ui, -apple-system !important; 
+    font-family: ui-sans-serif, system-ui, -apple-system !important;
 }
 
 .carousel-item span p{
@@ -114,6 +128,53 @@ img[alt="boquet"]{
     width: max-content !important;
 }
 
+
+.features-heading{
+    text-align: center;
+    margin: 6vh auto;
+    color: rgb(59, 59, 218) !important;
+}
+
+.feature-image-1{
+    float: left;
+    margin-right: 30px;
+}
+
+.feature-image-2{
+    float: right;
+    margin-left: 30px;
+}
+
+
+.features-section div{
+    width: 70%;
+    height: max-content;
+    margin: 100px auto !important;
+    line-height: 2;
+}
+
+.features-section div img{
+    height: 25vh;
+    border-radius: 10px;
+}
+
+.features-section div h2, .features-heading{
+    color: rgb(71, 71, 215);
+    font-family: "Open Sans", sans-serif;
+    font-weight: 500;
+}
+
+.features-heading{
+    font-weight: 700;
+}
+
+.features-section div p{
+    font-family: "Work Sans", sans-serif;
+    font-size: 20px !important;
+}
+
+
+
 @media screen and (max-width: 992px) {
 
     .pvn-logo{
@@ -123,10 +184,6 @@ img[alt="boquet"]{
     .nav-link{
         font-size: 4vw !important;
         border-bottom: 1px solid rgb(206, 206, 206);
-    }
-
-    .carousel{
-        height: 100vh;
     }
 
     .carousel-item span h1{
