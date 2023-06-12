@@ -2,15 +2,20 @@
     font-family: 'Anton', sans-serif !important;
 }
 
+body p{
+    font-family: "Work Sans", sans-serif;
+    font-size: 2.5vh;
+}
+
 .h1{
     text-align: center;
     margin: 5vh auto;
     color: rgb(71, 71, 215);
-}
+    font-weight: 700 !important;
+}   
 
 .h2{
-    text-align: center;
-    margin: 5vh auto;
+    margin: 5vh ;
     font-weight: bold;
 }
 
@@ -154,7 +159,7 @@ img[alt="boquet"]{
     border-radius: 10px;
 }
 
-.features-section div h2, .main-heading{
+h2{
     color: rgb(71, 71, 215);
     font-family: "Open Sans", sans-serif;
     font-weight: 500;
@@ -247,6 +252,28 @@ footer{
     margin: 3vh auto;
     font-size: 1vw;
 }
+
+.content-paragraph{
+    text-indent: 3vw;
+    margin: auto 13vw;
+    line-height: 1.8;
+}
+
+.about-section{
+    margin-bottom: 8vh;
+}
+
+.about-section h2{
+    margin-left: 5vw;
+}
+
+
+
+
+
+
+
+
 
 @media screen and (max-width: 992px) {
 
@@ -355,18 +382,5 @@ footer{
 
         
 }
-.abouttitle{
-    text-align: center;
-    font-family: "Roboto", Arial, sans-serif;
-}
-.mission{
-    padding-right: 85px;
-    padding-left: 95px;
-    font-family: "Work Sans", sans-serif;
-    font-size: 20PX;
-    margin-left: 20PX;
-}
-.motivate{
-    text-align: center;
-}
+
    

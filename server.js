@@ -15,7 +15,7 @@ app.use(session({
 
 app.post("/admission", function(req, res){
     const formData = req.body;
-    const formattedData = `Name: ${formData.studentname}\nMother Name: ${formData.mothername}\nFather Name: ${formData.fathername}\nStudent age: ${formData.age}\nDOB: ${formData.dob}\nAdmission Class: ${formData.admissioninto}\nAddress: ${formData.address}\nAadhar No: ${formData.aadhar}\nContact-1: ${formData.contact1}\nContact-2: ${formData.contact2}`;
+    const formattedData = `Name: ${formData.studentname}\nMother Name: ${formData.mothername}\nFather Name: ${formData.fathername}\nStudent age: ${formData.age}\nDOB: ${formData.dob}\nGender: ${formData.gender}\nAdmission Class: ${formData.admissioninto}\nAddress: ${formData.address}\nAadhar No: ${formData.aadhar}\nContact-1: ${formData.contact1}\nContact-2: ${formData.contact2}`;
 
     sendEmail(formattedData)
         .then(() => {
@@ -90,6 +90,10 @@ app.get("/circulars", function(req, res){
 
 app.get("/ssc-results", function(req, res){
     res.render("ssc-results");
+});
+
+app.get("/rules", function(req, res){
+    res.render("rules");
 });
 
 app.get("/student-login", function(req, res){
