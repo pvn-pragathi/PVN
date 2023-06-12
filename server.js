@@ -38,6 +38,10 @@ app.get("/circulars", function(req, res){
     res.render("circulars")
 });
 
+app.get("/ssc-results", function(req, res){
+    res.render("ssc-results")
+});
+
 app.get("/student-login", function(req, res){
     res.render("student-login")
 });
