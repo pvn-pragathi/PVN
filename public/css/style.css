@@ -2,8 +2,16 @@
     font-family: 'Anton', sans-serif !important;
 }
 
-.margin{
-    margin-right:50px;
+.h1{
+    text-align: center;
+    margin: 5vh auto;
+    color: rgb(71, 71, 215);
+}
+
+.h2{
+    text-align: center;
+    margin: 5vh auto;
+    font-weight: bold;
 }
 
 nav, .navbar{
@@ -165,6 +173,7 @@ footer{
     padding: 5vh;
     background-image: linear-gradient(120deg, #c2e9fb 0%, #a1c4fd 100%);
     text-align: center;
+    margin-top: 10vh;
 }
 
 .footer-content {
@@ -207,6 +216,37 @@ footer{
     margin: 5vh auto;
 }
 
+.error-message{
+    color: red;
+}
+
+.admission-form{
+    width: 50vw !important;
+    margin: auto;
+}
+
+.form-label{
+    font-size: 3vh;
+}
+
+#click-fee{
+    text-align: center;
+    margin-bottom: 5vh !important;
+}
+
+.success-message{
+    text-align: center;
+    color: rgb(0, 207, 0);
+    margin: 3vh auto;
+    font-size: 1vw;
+}
+
+.error-message{
+    text-align: center;
+    color: red;
+    margin: 3vh auto;
+    font-size: 1vw;
+}
 
 @media screen and (max-width: 992px) {
 
@@ -308,42 +348,25 @@ footer{
         height: max-content;
     }
 
+    .admission-form{
+        width: 90vw !important;
+    }
+
 
         
 }
-.photos{
-    font-size: 30px;
-    margin-right: auto;
-    margin-left: auto;
-    font-family:'Oswald', sans-serif;
+.abouttitle{
     text-align: center;
-    --angle: 0deg;
-    width: 15vmin;
-    height: 5vmin;
-    border: 0.8vmin solid;
-    border-image: linear-gradient(var(--angle), rgb(112, 197, 247), rgb(144, 85, 223)) 1;
-    
-    
-    animation: 10s rotate linear infinite;
-  }
-  
-  @keyframes rotate {
-    to {
-      --angle: 360deg;
-    }
-  }
-  
-  @property --angle {
-    syntax: '<angle>';
-    initial-value: 0deg;
-    inherits: false;
-  }
-  
-  
-
-    
-
-     
+    font-family: "Roboto", Arial, sans-serif;
+}
+.mission{
+    padding-right: 85px;
+    padding-left: 95px;
+    font-family: "Work Sans", sans-serif;
+    font-size: 20PX;
+    margin-left: 20PX;
+}
+.motivate{
+    text-align: center;
+}
    
-
- 

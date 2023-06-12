@@ -1,59 +1,86 @@
 <%- include('header') -%>
 
-<h1>Online Admission Form</h1>
+<h1 class="h1">Online Admission Form</h1>
 
-<h4><a href="/fee">Click here to view fee structure</a></h4>
+<div id="click-fee" class="mb-2 mt-2">
+  <a href="/fee">Click here to view fee structure</a>
+</div>
 
-<!-- <form action="/admission" method="post">
+<% if (submitted) { %>
+  <div class="success-message">Admission Form submitted successfully! We will contact you soon.</div>
+<% } else if (error) { %>
+  <div class="error-message">An error occurred while submitting the form. Please try again.</div>
+<% } %>
 
-  <label for="name">Student Full Name:</label>
-  <input type="text" id="name" name="name" required>
+<form action="/admission" method="post" onsubmit="validateForm(event)" class="admission-form">
 
-  <label for="name">Father Name:</label>
-  <input type="text" id="name" name="name" required>
+  <div class="mb-4">
+    <label for="studentname" class="form-label">Student name : </label>
+    <input type="text" class="form-control" id="studentname" required name="studentname">
+  </div>
 
-  <label for="name">Mother Name:</label>
-  <input type="text" id="name" name="name" required>
+  <div class="mb-4">
+    <label for="fathername" class="form-label">Father name / Guardian : </label>
+    <input type="text" class="form-control" id="fathername" required name="fathername">
+  </div>
 
-  <label for="age">Student Age:</label>
-  <input type="number" id="age" name="age" required>
+  <div class="mb-4">
+    <label for="mothername" class="form-label">Mother name : </label>
+    <input type="text" class="form-control" id="mothername" name="mothername">
+  </div>
 
-  <label for="age">DOB:</label>
-  <input type="date" id="age" name="age" required>
+  <div class="mb-5">
+    <label for="Age" class="form-label">Student Age : </label>
+    <input type="text" class="form-control" id="Age" required name="age">
+  </div>
 
-  <label for="grade">Admission into:</label>
-  <select id="grade" name="grade" required>
-    <option value="">Select Class</option>
-    <option value="1">LKG</option>
-    <option value="1">UKG</option>
-    <option value="1">1st class</option>
-    <option value="1">2st class</option>
-    <option value="1">2nd class</option>
-    <option value="1">3rd class</option>
-    <option value="1">4th class</option>
-    <option value="1">5th class</option>
-    <option value="1">6th class</option>
-    <option value="1">7th class</option>
-    <option value="1">8th class</option>
-    <option value="1">9th class</option>
+  <div class="mb-5">
+    <label for="dob" class="form-label">DOB : </label>
+    <input type="date" id="dob" required name="dob">
+  </div>
 
-    <label for="address">Residential Address:</label>
-    <textarea id="address" name="address" required></textarea>
+  <div class="mb-5">
+    <label for="class" class="form-label">Admission into:</label>
+    <select id="class" class="form-select" aria-label="Default select example" required name="admissioninto">
+      <option value="0" disabled selected>Select Class</option>
+      <option value="LKG">LKG</option>
+      <option value="UKG">UKG</option>
+      <option value="1st class">1st class</option>
+      <option value="2nd class">2nd class</option>
+      <option value="3rd class">3rd class</option>
+      <option value="4th class">4th class</option>
+      <option value="5th class">5th class</option>
+      <option value="6th class">6th class</option>
+      <option value="7th class">7th class</option>
+      <option value="8th class">8th class</option>
+      <option value="9th class">9th class</option>
+    </select>
+  </div>
 
-    <label for="contact">Contact Number 1:</label>
-    <input type="tel" id="contact" name="contact" required>
+  <div class="mb-5">
+    <label for="address" class="form-label">Residential Address : </label>
+    <textarea id="address" name="address" cols="40" required name="address"></textarea>
+  </div>
 
-    <label for="contact">Contact Number 2:</label>
-    <input type="tel" id="contact" name="contact" required>
+  <div class="mb-4">
+    <label for="aadhar" class="form-label">Student Aadhar no : </label>
+    <input type="text" id="aadhar" maxlength="14" required name="aadhar">
+    <span id="aadhaarError" class="error-message"></span><br>
+  </div>
 
-    <label for="contact">Student Aadhar no:</label>
-    <input type="tel" id="contact" name="contact" required>
+  <div class="mb-4">
+    <label for="contact-1" class="form-label">Contact Number 1 : </label>
+    <input type="tel" id="contact-1" maxlength="10" required name="contact1">
+    <span id="contact1Error" class="error-message"></span><br>
+  </div>
 
-    <input type="submit" value="Submit">
-</form> -->
+  <div class="mb-4">
+    <label for="contact-2" class="form-label">Contact Number 2 : </label>
+    <input type="tel" id="contact-2" maxlength="10" name="contact2" >
+    <span id="contact2Error" class="error-message"></span><br>
+  </div>
 
-<form action="/admission" method="post">
-  
+  <button type="submit" class="btn btn-primary btn-lg">Submit</button>
 </form>
 
-<%- include('footer') 
+<%- include('footer') %>
