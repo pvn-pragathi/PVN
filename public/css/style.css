@@ -267,10 +267,17 @@ footer{
     margin-left: 5vw;
 }
 
+table {
+    border-collapse: collapse;
+    margin: 5vh auto;
+}
 
-
-
-
+td {
+    border: 1px solid black;
+    vertical-align: middle;
+    text-align: center;
+    padding: 1vw;
+}
 
 
 
@@ -306,8 +313,8 @@ footer{
     .carousel-item .carousel-image{
         display: block;
         float: none;
-        width: 70vw !important;
-        height: 40vh;
+        width: 60vw !important;
+        height: 50vh;
         margin: auto;
     }
 
@@ -316,6 +323,7 @@ footer{
     }
 
     #clickhere{
+        margin-top: -2.5vh;
         margin-bottom: 5vh !important;
     }
 
@@ -349,6 +357,11 @@ footer{
         margin-bottom: 50px !important;
     }
 
+    .features-section div img{
+        height: 50vh;
+        border-radius: 10px;
+    }
+
     .feature-image-1, .feature-image-2{
         display: block;
         margin-right: 50px;
@@ -379,8 +392,34 @@ footer{
         width: 90vw !important;
     }
 
-
+    table {
+        border-collapse: collapse;
+        margin: 2vh auto !important;
+        width: 95vw;
+    }
+    
+    td {
+        border: 1px solid black;
+        vertical-align: middle;
+        text-align: center;
+        padding: 2vw !important;
+    }
         
 }
+.school-authorities{
+    text-align: center;
+    font-size: 40px;
+    color: rgb(71, 71, 215);
+    font-family: "Open Sans", sans-serif;
+    font-weight: 1000;
+    
+}
+.container {
+    text-align: center;
+  }
 
+  img {
+    width: 300px;
+    height: auto;
+  }
    
