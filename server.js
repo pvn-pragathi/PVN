@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const nodemailer = require('nodemailer');
 const session = require("express-session")
+const xlsx = require("xlsx-populate");
 
 const app = express();
 app.set('view engine', 'ejs');
@@ -19,18 +20,75 @@ app.post("/admission", function(req, res){
 
     sendEmail(formattedData)
         .then(() => {
-            // Set a flag to indicate successful form submission
             req.session.submitted = true;
             res.redirect('/admission');
         })
         .catch((error) => {
             console.error('Error sending email:', error);
-            // Set an error flag to indicate form submission error
             req.session.error = true;
             res.redirect('/admission');
         });
 });
 
+
+// Route handler for form submission
+app.post('/student-login', async (req, res) => {
+  const aadharNumber = req.body.aadhar.replace(/\s/g, ''); // Get the Aadhar number from the form input and remove whitespace
+
+  try {
+    // Read the Excel file
+    const workbook = await xlsx.fromFileAsync('login.xlsx');
+    const worksheet = workbook.sheet(0);
+
+    // Get the used range of the worksheet
+    const usedRange = worksheet.usedRange();
+
+    const rangeValues = usedRange.value();
+    const headers = rangeValues[0]; // Assume the headers are in the first row
+
+    const aadharColumnIndex = headers.findIndex(header => header.toLowerCase() === 'aadhar card number');
+    if (aadharColumnIndex === -1) {
+      res.render('student-login', { message: 'Invalid Excel file format. Aadhar column not found.' });
+      return;
+    }
+
+    const aadharValues = [];
+    rangeValues.slice(1).forEach(row => {
+      const cellValue = row[aadharColumnIndex];
+      if (cellValue) {
+        aadharValues.push(cellValue.toString().replace(/\s/g, ''));
+      }
+    });
+
+    const rowIndex = aadharValues.findIndex(value => value === aadharNumber);
+    if (rowIndex === -1) {
+      res.render('student-login', { message: 'Invalid Aadhar number. Please try again.' });
+      return;
+    }
+
+    // Retrieve the student details from the corresponding row
+    const studentDetails = {};
+    headers.forEach((header, index) => {
+      studentDetails[header] = rangeValues[rowIndex + 1][index];
+    });
+
+    res.render('student-details', { student: studentDetails });
+  } catch (error) {
+    console.error('Error reading the Excel file:', error);
+    res.render('student-login', { message: 'An error occurred. Please try again later.' });
+  }
+});
+
+  
+  
+
+  
+
+
+  
+  
+  
+  
 
 function sendEmail(content) {
     const transporter = nodemailer.createTransport({
@@ -96,8 +154,8 @@ app.get("/rules", function(req, res){
     res.render("rules");
 });
 
-app.get("/student-login", function(req, res){
-    res.render("student-login");
+app.get('/student-login', (req, res) => {
+    res.render('student-login', { message: '' });
 });
 
 

@@ -1,5 +1,13 @@
 <%- include('header') -%>
 
-Student Login
+<% if (message) { %>
+    <p><%= message %></p>
+<% } %>
+  
+<form method="POST" action="/student-login">
+    <label for="aadhar">Aadhar Number:</label>
+    <input type="text" id="aadhar" name="aadhar" required>
+    <button type="submit">Login</button>
+</form>
 
 <%- include('footer') -%>

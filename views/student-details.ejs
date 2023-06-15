@@ -1,0 +1,14 @@
+<%- include('header') -%>
+
+
+<h1>Student Details</h1>
+<% if (student) { %>
+  <% Object.keys(student).forEach(function(key) { %>
+    <p><%= key %>: <%= student[key] %></p>
+  <% }); %>
+<% } else { %>
+  <p>No student details found.</p>
+<% } %>
+
+
+<%- include('footer') -%>

@@ -447,12 +447,33 @@ td {
     margin: auto 13vw;
     line-height: 1.8;
 }
-.Points{
+.points{
     font-family: "Work Sans", sans-serif;
     font-size: 2.5vh;
     margin: auto 13vw;
     line-height: 1.8;
 }
-
+.girls{
+   margin-right: 40px;
+   margin-left: 20vw;
+   font-size: 40px;
+}
+.uniform{
+font-family: "Work Sans", sans-serif;
+font-size: 2.5vh;
+margin: auto 13vw;
+line-height: 1.8;
+margin-top: 1.5vw;
+}
+.attendence{
+    font-family: "Work Sans", sans-serif;
+    font-size: 2.5vh;
+    margin: auto 13vw;
+    line-height: 1.8;
+    margin-top: 1.5vw; 
+    color: maroon;
+    text-indent: -20px;
+    font-family: 'Roboto Slab', serif;
+}
 
    
