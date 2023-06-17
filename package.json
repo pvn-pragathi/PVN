@@ -10,13 +10,19 @@
   "author": "Swaroop Chikkam",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.4.0",
     "body-parser": "^1.20.2",
+    "csv-parser": "^3.0.0",
+    "dotenv": "^16.1.4",
     "ejs": "^3.1.9",
     "exceljs": "^4.3.0",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
+    "facebook-node-sdk": "^0.2.0",
+    "fs": "^0.0.1-security",
     "nodemailer": "^6.9.3",
     "nodemon": "^2.0.22",
+    "path": "^0.12.7",
     "xlsx": "^0.18.5",
     "xlsx-populate": "^1.21.0"
   }

@@ -1,479 +1,488 @@
-.anton{
-    font-family: 'Anton', sans-serif !important;
+.anton {
+  font-family: "Anton", sans-serif !important;
 }
 
-body p{
-    font-family: "Work Sans", sans-serif;
-    font-size: 2.5vh;
+body p {
+  font-family: "Work Sans", sans-serif;
+  font-size: 2.5vh;
 }
 
-.h1{
-    text-align: center;
-    margin: 5vh auto;
-    color: rgb(71, 71, 215);
-    font-weight: 700 !important;
-}   
-
-.h2{
-    margin: 5vh ;
-    font-weight: bold;
+.h1 {
+  text-align: center;
+  margin: 5vh auto;
+  color: rgb(71, 71, 215);
+  font-weight: 700 !important;
 }
 
-nav, .navbar{
-    background-image: linear-gradient(120deg, #c2e9fb 0%, #a1c4fd 100%);
+.h2 {
+  margin: 5vh;
+  font-weight: bold;
 }
 
-.dropdown-menu{
-    background-image: linear-gradient(120deg, #c2e9fb 0%, #a1c4fd 100%);
+nav,
+.navbar {
+  background-image: linear-gradient(120deg, #c2e9fb 0%, #a1c4fd 100%);
 }
 
-.nav-link:hover{
-    color: white !important;
+.dropdown-menu {
+  background-image: linear-gradient(120deg, #c2e9fb 0%, #a1c4fd 100%);
 }
 
-.nav-link{
-    font-size: 1.7vw !important;
-    margin: auto 1vw;
-    color: black !important;
+.nav-link:hover {
+  color: white !important;
 }
 
-.carousel, .carousel-inner{
-    background-image: linear-gradient(120deg, #c2e9fb 0%, #a1c4fd 100%);
-    min-height: 90vh ;
+.nav-link {
+  font-size: 1.7vw !important;
+  margin: auto 1vw;
+  color: black !important;
 }
 
-.carousel-control-prev, .carousel-control-next{
-    width: 9%;
+.carousel,
+.carousel-inner {
+  background-image: linear-gradient(120deg, #c2e9fb 0%, #a1c4fd 100%);
+  min-height: 90vh;
 }
 
-.carousel-item .carousel-image{
-    float:right;
-    margin-right: 10vw;
-    width: 40%;
-    height: 70vh;
-    margin-top: 8vh;
+.carousel-control-prev,
+.carousel-control-next {
+  width: 9%;
 }
 
-.carousel-item span{
-    float: left;
-    width: 35%;
-    margin-left: 10vw;
-    padding-top: 10vh;
-    height: 85vh;
-    color: #5c5c5c;
+.carousel-item .carousel-image {
+  float: right;
+  margin-right: 10vw;
+  width: 40%;
+  height: 70vh;
+  margin-top: 8vh;
 }
 
-.carousel-item span h1{
-    font-size: 6vh;
-    font-weight: 700;
-    font-family: ui-sans-serif, system-ui, -apple-system; 
-    margin-top: 5vh;
-    margin-bottom: 3vh; 
-    width: 25vw;
+.carousel-item span {
+  float: left;
+  width: 35%;
+  margin-left: 10vw;
+  padding-top: 10vh;
+  height: 85vh;
+  color: #5c5c5c;
 }
 
-
-.carousel-item span h3{
-    font-size: 4vh;
-    font-weight: 500;
-    font-family: ui-sans-serif, system-ui, -apple-system !important;
+.carousel-item span h1 {
+  font-size: 6vh;
+  font-weight: 700;
+  font-family: ui-sans-serif, system-ui, -apple-system;
+  margin-top: 5vh;
+  margin-bottom: 3vh;
+  width: 25vw;
 }
 
-.carousel-item span p{
-    margin-top: 6vh;
-    margin-bottom: 8vh;
-    line-height: 30px;
-    font-size: 2.4vh;
+.carousel-item span h3 {
+  font-size: 4vh;
+  font-weight: 500;
+  font-family: ui-sans-serif, system-ui, -apple-system !important;
 }
 
-.carousel-item span h5{
-    font-size: 3vh;
+.carousel-item span p {
+  margin-top: 6vh;
+  margin-bottom: 8vh;
+  line-height: 30px;
+  font-size: 2.4vh;
 }
 
-img[alt="boquet"]{
-    width: 40px;
-    height: 40px;
+.carousel-item span h5 {
+  font-size: 3vh;
 }
 
-.congrats-text{
-    font-family: 'Great Vibes', cursive;
-    font-size: 4vh;
-    margin-bottom: 6vh;
-    margin-top: 4vh;
+img[alt="boquet"] {
+  width: 40px;
+  height: 40px;
 }
 
-.see-more{
-    margin-top: 5vh;
+.congrats-text {
+  font-family: "Great Vibes", cursive;
+  font-size: 4vh;
+  margin-bottom: 6vh;
+  margin-top: 4vh;
 }
 
-#x{
-    margin: none;
-    padding: none;
-    width: 20vw;
+.see-more {
+  margin-top: 5vh;
 }
 
-.sports-acheivements{
-    margin: 1.3vh !important;
-    font-size: 2.2vh;
+#x {
+  margin: none;
+  padding: none;
+  width: 20vw;
 }
 
-#iit{
-    width: 35vw;
+.sports-acheivements {
+  margin: 1.3vh !important;
+  font-size: 2.2vh;
 }
 
-.click{
-    margin-top: 10vh;
+#iit {
+  width: 35vw;
 }
 
-#gs{
-    width: max-content !important;
+.click {
+  margin-top: 10vh;
 }
 
-
-.main-heading{
-    text-align: center;
-    margin: 6vh auto;
-    color: rgb(59, 59, 218) !important;
+#gs {
+  width: max-content !important;
 }
 
-.feature-image-1{
-    float: left;
-    margin-right: 30px;
+.main-heading {
+  text-align: center;
+  margin: 6vh auto;
+  color: rgb(59, 59, 218) !important;
 }
 
-.feature-image-2{
-    float: right;
-    margin-left: 30px;
+.feature-image-1 {
+  float: left;
+  margin-right: 30px;
 }
 
-
-.features-section div{
-    width: 70%;
-    height: max-content;
-    margin: 100px auto !important;
-    line-height: 2;
+.feature-image-2 {
+  float: right;
+  margin-left: 30px;
 }
 
-.features-section div img{
-    height: 25vh;
-    border-radius: 10px;
+.features-section div {
+  width: 70%;
+  height: max-content;
+  margin: 100px auto !important;
+  line-height: 2;
 }
 
-h2{
-    color: rgb(71, 71, 215);
-    font-family: "Open Sans", sans-serif;
-    font-weight: 500;
+.features-section div img {
+  height: 25vh;
+  border-radius: 10px;
 }
 
-.main-heading{
-    font-weight: 700;
+h2 {
+  color: rgb(71, 71, 215);
+  font-family: "Open Sans", sans-serif;
+  font-weight: 500;
 }
 
-.features-section div p{
-    font-family: "Work Sans", sans-serif;
-    font-size: 20px !important;
+.main-heading {
+  font-weight: 700;
 }
 
-footer{
-    padding: 5vh;
-    background-image: linear-gradient(120deg, #c2e9fb 0%, #a1c4fd 100%);
-    text-align: center;
-    margin-top: 10vh;
+.features-section div p {
+  font-family: "Work Sans", sans-serif;
+  font-size: 20px !important;
+}
+
+footer {
+  padding: 5vh;
+  background-image: linear-gradient(120deg, #c2e9fb 0%, #a1c4fd 100%);
+  text-align: center;
+  margin-top: 10vh;
 }
 
 .footer-content {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 .footer-content a {
-    color: #333;
-    text-decoration: none;
-    font-size: 16px;
-    padding: 5px 0;
-    margin: auto 5px;
+  color: #333;
+  text-decoration: none;
+  font-size: 16px;
+  padding: 5px 0;
+  margin: auto 5px;
 }
 
 .footer-content a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 .footer-content p {
-    margin-bottom: 10px;
-    font-size: 14px;
-    width: 50vw;
-    margin: auto;
+  margin-bottom: 10px;
+  font-size: 14px;
+  width: 50vw;
+  margin: auto;
 }
 
 .footer-bottom {
-    font-size: 15px;
-    color: #777;
-}
-  
-.footer-1{
-    float: left;
+  font-size: 15px;
+  color: #777;
 }
 
-.footer-2{
-    float: right;
+.footer-1 {
+  float: left;
 }
 
-.footer-links{
-    margin: 5vh auto;
+.footer-2 {
+  float: right;
 }
 
-.error-message{
-    color: red;
+.footer-links {
+  margin: 5vh auto;
 }
 
-.admission-form{
-    width: 50vw !important;
-    margin: auto;
+.error-message {
+  color: red;
 }
 
-.form-label{
-    font-size: 3vh;
+.admission-form {
+  width: 50vw !important;
+  margin: auto;
 }
 
-#click-fee{
-    text-align: center;
-    margin-bottom: 5vh !important;
+.form-label {
+  font-size: 3vh;
 }
 
-.success-message{
-    text-align: center;
-    color: rgb(0, 207, 0);
-    margin: 3vh auto;
-    font-size: 1vw;
+#click-fee {
+  text-align: center;
+  margin-bottom: 5vh !important;
 }
 
-.error-message{
-    text-align: center;
-    color: red;
-    margin: 3vh auto;
-    font-size: 1vw;
+.success-message {
+  text-align: center;
+  color: rgb(0, 207, 0);
+  margin: 3vh auto;
+  font-size: 1vw;
 }
 
-.content-paragraph{
-    text-indent: 3vw;
-    margin: auto 13vw;
-    line-height: 1.8;
+.error-message {
+  text-align: center;
+  color: red;
+  margin: 3vh auto;
+  font-size: 1vw;
 }
 
-.about-section, .contact-section{
-    margin-bottom: 8vh !important;
+.content-paragraph {
+  text-indent: 3vw;
+  margin: auto 13vw;
+  line-height: 1.8;
 }
 
-.about-section h2, .contact-section h2{
-    margin-left: 5vw;
+.about-section,
+.contact-section {
+  margin-bottom: 8vh !important;
 }
 
-.about-section .content-paragraph.mt-5.mb-5{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 5vw;
-    margin-bottom: 5vw;
-    text-align: center;
+.about-section h2,
+.contact-section h2 {
+  margin-left: 5vw;
 }
-  
+
+.about-section .content-paragraph.mt-5.mb-5 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 5vw;
+  margin-bottom: 5vw;
+  text-align: center;
+}
+
 .about-section .content-paragraph figure {
-    margin-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
 }
-  
+
 .about-section .content-paragraph img {
-    border-radius: 15px;
-    border: 2px solid black;
+  border-radius: 15px;
+  border: 2px solid black;
 }
-  
+
 .about-section .content-paragraph figcaption {
-    margin-top: 1rem;
+  margin-top: 1rem;
 }
 
 table {
-    border-collapse: collapse;
-    margin: 5vh auto;
+  border-collapse: collapse;
+  margin: 5vh auto;
 }
 
 td {
+  border: 1px solid black;
+  vertical-align: middle;
+  text-align: center;
+  padding: 1vw;
+}
+
+.album-section h2{
+    text-align: center !important;
+}
+
+.image-gallery{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.image-gallery .gallery-image .image{
+    width: 20rem;
+}
+
+@media screen and (max-width: 992px) {
+  .pvn-logo {
+    margin-left: 3px !important;
+  }
+
+  .nav-link {
+    font-size: 5vw !important;
+    border-bottom: 1px solid rgb(206, 206, 206);
+  }
+
+  .carousel-item span {
+    display: block;
+    text-align: left;
+    margin: auto;
+    margin-left: 15vw;
+    width: 70vw;
+    margin-top: -10vh;
+  }
+
+  .carousel-item span h1,
+  #iit {
+    width: 80vw !important;
+  }
+
+  #gs {
+    width: 80vw !important;
+  }
+
+  .carousel-item .carousel-image {
+    display: block;
+    float: none;
+    width: 60vw !important;
+    height: 50vh;
+    margin: auto;
+  }
+
+  .carousel-item span button {
+    margin-bottom: 5vh !important;
+  }
+
+  #clickhere {
+    margin-top: -2.5vh;
+    margin-bottom: 5vh !important;
+  }
+
+  img[alt="carousel-3"] {
+    display: none !important;
+  }
+
+  img[alt="carousel-1"] {
+    margin-top: -30px !important;
+    margin-bottom: 50px !important;
+  }
+
+  img[alt="carousel-2"] {
+    margin-top: -140px !important;
+    margin-bottom: 50px !important;
+  }
+
+  img[alt="carousel-3"] {
+    margin-bottom: 50px !important;
+    margin-top: 20px !important;
+  }
+
+  img[alt="carousel-4"] {
+    margin-top: 20px !important;
+    margin-bottom: 50px !important;
+  }
+
+  img[alt="carousel-5"] {
+    margin-top: -150px !important;
+    margin-bottom: 50px !important;
+  }
+
+  .features-section div img {
+    height: 50vh;
+    border-radius: 10px;
+  }
+
+  .staff-image {
+    all: unset !important;
+    width: 80vw !important;
+    height: 35vh !important;
+  }
+
+  .feature-image-1,
+  .feature-image-2 {
+    display: block;
+    margin-right: 50px;
+    margin: auto;
+    margin-bottom: 3vh;
+    clear: right !important;
+    width: 70vw;
+  }
+
+  .feature-text-1,
+  .feature-text-1 {
+    display: block;
+  }
+
+  .features-section div h2 {
+    display: block;
+  }
+
+  .features-section div {
+    line-height: 1.5;
+  }
+
+  .carousel-item span {
+    height: max-content;
+  }
+
+  .admission-form {
+    width: 90vw !important;
+  }
+
+  table {
+    border-collapse: collapse;
+    margin: 2vh auto !important;
+    width: 95vw;
+  }
+
+  td {
     border: 1px solid black;
     vertical-align: middle;
     text-align: center;
-    padding: 1vw;
+    padding: 2vw !important;
+  }
 }
-
-
-
-
-@media screen and (max-width: 992px) {
-
-    .pvn-logo{
-        margin-left: 3px !important;
-    }
-
-    .nav-link{
-        font-size: 5vw !important;
-        border-bottom: 1px solid rgb(206, 206, 206);
-    }
-
-    .carousel-item span{
-        display: block;
-        text-align: left;
-        margin:auto;
-        margin-left: 15vw;
-        width: 70vw;
-        margin-top: -10vh;
-    }
-
-    .carousel-item span h1, #iit{
-        width: 80vw !important;
-    }
-
-    #gs{
-        width: 80vw !important;
-    }
-
-    .carousel-item .carousel-image{
-        display: block;
-        float: none;
-        width: 60vw !important;
-        height: 50vh;
-        margin: auto;
-    }
-
-    .carousel-item span button{
-        margin-bottom: 5vh !important;
-    }
-
-    #clickhere{
-        margin-top: -2.5vh;
-        margin-bottom: 5vh !important;
-    }
-
-    img[alt="carousel-3"]{
-        display: none !important;
-    }
-
-
-    img[alt="carousel-1"]{
-        margin-top: -30px !important;
-        margin-bottom: 50px !important;
-    }
-
-    img[alt="carousel-2"]{
-        margin-top: -140px !important;
-        margin-bottom: 50px !important;
-    }
-
-    img[alt="carousel-3"]{
-        margin-bottom: 50px !important;
-        margin-top: 20px !important;
-    }
-
-    img[alt="carousel-4"]{
-        margin-top: 20px !important;
-        margin-bottom: 50px !important;
-    }
-
-    img[alt="carousel-5"]{
-        margin-top: -150px !important;
-        margin-bottom: 50px !important;
-    }
-
-    .features-section div img{
-        height: 50vh;
-        border-radius: 10px;
-    }
-
-    .staff-image{
-        all: unset !important;
-        width: 80vw !important;
-        height: 35vh !important;
-    }
-
-    .feature-image-1, .feature-image-2{
-        display: block;
-        margin-right: 50px;
-        margin: auto;
-        margin-bottom: 3vh;
-        clear: right !important;
-        width: 70vw;
-    }
-
-    .feature-text-1, .feature-text-1{
-        display: block;
-
-    }
-
-    .features-section div h2{
-        display: block;
-    }
-
-    .features-section div{
-        line-height: 1.5;
-    }
-
-    .carousel-item span{
-        height: max-content;
-    }
-
-    .admission-form{
-        width: 90vw !important;
-    }
-
-    table {
-        border-collapse: collapse;
-        margin: 2vh auto !important;
-        width: 95vw;
-    }
-    
-    td {
-        border: 1px solid black;
-        vertical-align: middle;
-        text-align: center;
-        padding: 2vw !important;
-    }
-        
+.school-authorities {
+  text-align: center;
+  font-size: 40px;
+  color: rgb(71, 71, 215);
+  font-family: "Open Sans", sans-serif;
+  font-weight: 1000;
 }
-.school-authorities{
-    text-align: center;
-    font-size: 40px;
-    color: rgb(71, 71, 215);
-    font-family: "Open Sans", sans-serif;
-    font-weight: 1000;
-    
+.rules {
+  margin: auto 13vw;
+  line-height: 1.8;
 }
-.rules{
-   
-    margin: auto 13vw;
-    line-height: 1.8;
+.points {
+  font-family: "Work Sans", sans-serif;
+  font-size: 2.5vh;
+  margin: auto 13vw;
+  line-height: 1.8;
 }
-.points{
-    font-family: "Work Sans", sans-serif;
-    font-size: 2.5vh;
-    margin: auto 13vw;
-    line-height: 1.8;
+.girls {
+  margin-right: 40px;
+  margin-left: 20vw;
+  font-size: 40px;
 }
-.girls{
-   margin-right: 40px;
-   margin-left: 20vw;
-   font-size: 40px;
+.uniform {
+  font-family: "Work Sans", sans-serif;
+  font-size: 2.5vh;
+  margin: auto 13vw;
+  line-height: 1.8;
+  margin-top: 1.5vw;
 }
-.uniform{
-font-family: "Work Sans", sans-serif;
-font-size: 2.5vh;
-margin: auto 13vw;
-line-height: 1.8;
-margin-top: 1.5vw;
+.attendence {
+  font-family: "Work Sans", sans-serif;
+  font-size: 2.5vh;
+  margin: auto 13vw;
+  line-height: 1.8;
+  margin-top: 1.5vw;
+  color: maroon;
+  text-indent: -20px;
+  font-family: "Roboto Slab", serif;
 }
-.attendence{
-    font-family: "Work Sans", sans-serif;
-    font-size: 2.5vh;
-    margin: auto 13vw;
-    line-height: 1.8;
-    margin-top: 1.5vw; 
-    color: maroon;
-    text-indent: -20px;
-    font-family: 'Roboto Slab', serif;
-}
-
-   
