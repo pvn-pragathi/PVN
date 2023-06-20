@@ -1,22 +1,24 @@
 <%- include('header') -%>
 
 <div class="container">
-    <% for (let i = 0; i < albums.length; i++) { %>
-      <% const album = albums[i]; %>
-      <% if (album.name !== "Profile pictures" && album.photos && album.photos.data.length > 0) { %>
+    <% albums.forEach(album => { %>
+      <% if (album.name !== "Profile pictures" && album.photos && album.photos.data) { %>
         <div class="album-section">
           <h2 class="mt-5 mb-5"><%= album.name %></h2>
           <div class="image-gallery">
-            <% for (let j = 0; j < album.photos.data.length; j++) { %>
-              <div class="gallery-image ms-3 me-3">
-                <img src="<%= album.photos.data[j].picture %>" alt="Photo" class="image">
-                <p class="image-text"><%= album.photos.data[j].name %></p>
+            <% album.photos.data.forEach(photo => { %>
+              <div class="gallery-image-total ms-3 me-3">
+                <img src="<%= photo.images[0].source %>" alt="gallery-image" class="gallery-image">
+                <p class="image-text"><%= photo.name %></p>
               </div>
-            <% } %>
+            <% }); %>
           </div>
         </div>
       <% } %>
-    <% } %>
+    <% }); %>
   </div>
+  
+  
+  
 
 <%- include('footer') -%>   

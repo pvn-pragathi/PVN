@@ -7,22 +7,19 @@
     <div class="col-md-6">
       <ul class="list-group">
         <% for (const key in studentDetails) { %>
-          <% if (key !== 'SNO ' && key !== 'DOJ ' && key !== 'N-NO' && key !== 'VILLAGE ' && key !== 'MANDAL' && key !== 'DIST' && key !== 'ADDRESS' && key !== 'CASTE' && key !== 'CASTE CATEGORY' && key !== 'PREVIOWS SCHOOL') { %>
-            <% let displayName = key; %>
-            <% if (key === 'S NAME ') { displayName = 'Student Name'; } %>
-            <% if (key === 'F NAME ') { displayName = 'Father Name'; } %>
-            <% if (key === 'M NAME') { displayName = 'Mother Name'; } %>
-            <% if (key === 'ADMN') { displayName = 'Admission Number'; } %>
-            <% if (key === 'PH-1') { displayName = 'Phone number - 1'; } %>
-            <% if (key === 'PH-2') { displayName = 'Phone number - 2'; } %>
-            <li class="list-group-item">
-              <strong><%= displayName %>:</strong> <%= studentDetails[key] %>
-            </li>
-          <% } %>
+          <li class="list-group-item">
+            <strong><%= key %>:</strong> <%= studentDetails[key] %>
+          </li>
         <% } %>
       </ul>
     </div>
   </div>
 </div>
+
+
+
+
+
+
 
 <%- include('footer') -%>

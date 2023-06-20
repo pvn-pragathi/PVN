@@ -1,0 +1,44 @@
+<%- include('header') -%>
+
+<!-- circulars.ejs -->
+
+<style>
+  .circular {
+    background-color: #f2f2f2;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 20px;
+    width: 80vw;
+    margin: auto;
+    border-radius: 10px;
+    margin-bottom: 8vh;
+  }
+
+  .circular h3 {
+    margin-bottom: 10px;
+  }
+
+  .circular p {
+    margin: 5px 0;
+  }
+</style>
+
+<h1 class="h1">Circulars</h1>
+
+<% if (circulars.length === 0) { %>
+  <p>No circulars found.</p>
+<% } else { %>
+  <% circulars.forEach(function(circular) { %>
+    <div class="circular">
+      <h3><%= circular.title %></h3>
+      <p><strong>For Classes:</strong> <%= circular.classes.join(', ') %></p>
+      <p><strong>Day:</strong> <%= circular.day %></p>
+      <p><strong>Date:</strong> <%= circular.date %></p>
+      <p><%= circular.content %></p>
+    </div>
+  <% }); %>
+<% } %>
+
+<%- include('footer') -%>
+
+  

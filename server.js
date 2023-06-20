@@ -4,18 +4,15 @@ const nodemailer = require("nodemailer");
 const session = require("express-session");
 const xlsx = require("xlsx");
 const https = require("https");
-const axios = require("axios");
-const { log } = require("console");
-
-// const facebook = new Facebook({
-//   appId: '1668647766970031',
-//   secret: '1feef404e27715163eb2da055d931b88',
-// });
+const multer = require("multer");
+const fs = require("fs");
+const mongoose = require("mongoose");
 
 const app = express();
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
+
 app.use(
   session({
     secret: "PRAGATHI12345",
@@ -24,61 +21,167 @@ app.use(
   })
 );
 
-app.post('/student-login', async (req, res) => {
-    const aadharNumber = req.body.aadhar.replace(/\s/g, '');
-    let headers;
-  
-    try {
-      const workbook = xlsx.readFile('school-data.xlsx');
-      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-      const rangeValues = xlsx.utils.sheet_to_json(worksheet, { header: 1 });
-  
-      // Find the Aadhar column index
-      headers = rangeValues[1];
-      const aadharColumnIndex = headers.findIndex(header => header.toLowerCase() === 'aadhar no');
-  
-      if (aadharColumnIndex === -1) {
-        console.log('Aadhar column not found in school data. Please check the Excel file.');
-        res.render('student-login', { message: 'Aadhar column not found in school data. Please check the Excel file.' });
-        return;
-      }
-  
-      let rowIndex = -1;
-      let studentDetails = {};
-  
-      // Find the row with the matching Aadhar number
-      for (let i = 2; i < rangeValues.length; i++) {
-        const row = rangeValues[i];
-        const cellValue = row[aadharColumnIndex];
-  
-        if (cellValue && cellValue.toString().replace(/\s/g, '') === aadharNumber) {
-          rowIndex = i;
-          break;
-        }
-      }
-  
-      if (rowIndex === -1) {
-        console.log('Aadhar number not found in school data. Please update your Aadhar number in school data.');
-        res.render('student-login', { message: 'Aadhar number not found in school data. Please update your Aadhar number in school data.' });
-        return;
-      }
-  
-      // Create student details object
-      headers.forEach((header, index) => {
-        studentDetails[header] = rangeValues[rowIndex][index];
-      });
-  
-      console.log('Student Details:', studentDetails);
-      res.render('student-details', { studentDetails });
-  
-      // Rest of the code...
-  
-    } catch (error) {
-      console.error('Error reading the Excel file:', error);
-      res.render('student-login', { message: 'An error occurred. Please try again later.' });
-    }
+// MongoDB connection
+mongoose
+  .connect("mongodb://127.0.0.1/studentDataDB", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("Connected to MongoDB");
+  })
+  .catch((error) => {
+    console.error("MongoDB connection error:", error);
   });
-  
+
+const db = mongoose.connection;
+
+db.on("error", console.error.bind(console, "MongoDB connection error:"));
+db.once("open", () => {
+  console.log("Connected to MongoDB");
+});
+
+// Define Mongoose schema and models for circulars
+const circularSchema = new mongoose.Schema({
+  title: String,
+  classes: [String],
+  date: String,
+  day: String,
+  content: String,
+});
+
+const Circular = mongoose.model("Circular", circularSchema);
+
+// Populate database from Excel on server startup
+async function populateDatabaseFromExcel(filePath) {
+  try {
+    await Student.deleteMany();
+
+    const workbook = xlsx.readFile(filePath);
+    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+    const jsonData = xlsx.utils.sheet_to_json(worksheet);
+
+    for (let i = 0; i < jsonData.length; i++) {
+      const data = jsonData[i];
+      console.log("Data:", data);
+      const student = new Student(data);
+      await student.save();
+      console.log("Student saved:", student);
+    }
+
+    console.log("Database populated successfully.");
+  } catch (error) {
+    console.error("Error populating database:", error);
+  }
+}
+
+const excelFilePath = `${__dirname}/student-details/school-data.xlsx`;
+populateDatabaseFromExcel(excelFilePath);
+
+const upload = multer({ dest: "/multer" });
+
+// Routes
+app.get("/admin", function (req, res) {
+  res.render("admin", { message: "" });
+});
+
+app.post("/admin", upload.single("file"), async function (req, res) {
+  const username = req.body.username.trim();
+  const password = req.body.password.trim();
+
+  if (username === "PVN@admin" && password === "PVN@website") {
+    if (req.file) {
+      const newFilePath = "student-details/" + req.file.originalname;
+      const previousFilePath = getLatestFilePath();
+
+      if (previousFilePath) {
+        fs.unlinkSync(previousFilePath);
+      }
+
+      fs.renameSync(req.file.path, newFilePath);
+      res.render("admin", { message: "File uploaded successfully" });
+
+      // Update the database with the new file
+      try {
+        await populateDatabaseFromExcel(newFilePath);
+        console.log("Database updated successfully.");
+      } catch (error) {
+        console.error("Error updating database:", error);
+      }
+    } else {
+      res.render("admin", { message: "No file uploaded" });
+    }
+  } else {
+    if (req.file) {
+      fs.unlinkSync(req.file.path);
+    }
+    res.render("admin", { message: "Invalid username or password" });
+  }
+});
+
+function getLatestFilePath() {
+  const directoryPath = "student-details/";
+  const files = fs.readdirSync(directoryPath);
+
+  if (files.length === 0) {
+    return null;
+  }
+
+  files.sort(function (a, b) {
+    return (
+      fs.statSync(directoryPath + b).mtime.getTime() -
+      fs.statSync(directoryPath + a).mtime.getTime()
+    );
+  });
+
+  return directoryPath + files[0];
+}
+
+app.post("/student-login", async (req, res) => {
+  const aadharNumber = req.body.aadhar.replace(/\s/g, "");
+  const password = req.body.password;
+
+  try {
+    const student = await Student.findOne({ "Aadhar Number": aadharNumber });
+
+    if (!student) {
+      console.log(
+        "Aadhar number not found in the database. Please update your Aadhar number in the database."
+      );
+      return res.render("student-login", {
+        message:
+          "Aadhar number not found in the database. Please update your Aadhar number in the database.",
+      });
+    }
+
+    const admissionNumber = student["Admission Number"].toString();
+    const expectedPassword = `PVN@${admissionNumber}`;
+
+    if (password !== expectedPassword) {
+      console.log("Invalid password");
+      return res.render("student-login", { message: "Invalid password" });
+    }
+
+    const studentDetails = student.toObject();
+    delete studentDetails._id;
+    delete studentDetails.__v;
+    delete studentDetails.SNO;
+
+    req.session.student = {
+      class: studentDetails.Class,
+    };
+    req.session.studentId = student._id; // Store the student ID in the session
+    res.set("Cache-Control", "no-store");
+    return res.render("student-details", { studentDetails });
+
+    // Rest of the code...
+  } catch (error) {
+    console.error("Error retrieving student details from the database:", error);
+    return res.render("student-login", {
+      message: "An error occurred. Please try again later.",
+    });
+  }
+});
 
 function sendEmail(content) {
   const transporter = nodemailer.createTransport({
@@ -119,11 +222,15 @@ app.get("/admission", function (req, res) {
   res.render("admission", { submitted, error });
 });
 
-const access_token = "EAAXtoFVnzq8BALRp1Q67do1dqg79FDTSXuSn6q9l3XcXyOwdLuzEv98ZBc6fikYCEkD2anp79Gwx1x6ZAcLu9H2Bg43bZBchA2W4CgLizE3dHfQcw6S9fZAY7DdMSab7GnZA6daZB2Y0nnoh6ZAuwSp8PThZCBmRKUDqAeypnPFu3vGkQqVHXG47";
+app.post("/admission", function (req, res) {});
+
+const access_token =
+  "EAAXtoFVnzq8BAFsCeI9M3HMCtjSzVKy3LJdlCXtxPiVwmaW0g0jDZClxMBgr4SSimjiBLCsXnBYPp06cOXKyCwKRnrhZBxihajA82FyuSZCeFAKIdMZB3MPnc8CKeZBJqBR0hppSZBbf7sZAqcCCaxZAsEKl85ovq7tOg7hDJocLC572X7uPcGYt";
 
 app.get("/gallery", function (req, res) {
   const facebook_url_endpoint =
-    "https://graph.facebook.com/me/accounts/?fields=albums{id,name,photos{id,name,picture}}&access_token=" + access_token;
+    "https://graph.facebook.com/me/accounts/?fields=albums{id,name,photos{id,name,images}}&access_token=" +
+    access_token;
 
   https.get(facebook_url_endpoint, function (response) {
     let chunks = "";
@@ -140,17 +247,8 @@ app.get("/gallery", function (req, res) {
   });
 });
 
-
 app.get("/fee", function (req, res) {
   res.render("fee");
-});
-
-app.get("/calendar", function (req, res) {
-  res.render("calendar");
-});
-
-app.get("/circulars", function (req, res) {
-  res.render("circulars");
 });
 
 app.get("/ssc-results", function (req, res) {
@@ -163,6 +261,60 @@ app.get("/rules", function (req, res) {
 
 app.get("/student-login", (req, res) => {
   res.render("student-login", { message: "" });
+});
+
+app.get("/circulars", async (req, res) => {
+  try {
+    const circulars = await Circular.find();
+    res.render("circulars", { circulars, message: "" });
+  } catch (error) {
+    console.error("Error retrieving circulars:", error);
+    res.render("circulars", { circulars: [], message: "Error retrieving circulars" });
+  }
+});
+
+app.get("/teacher-login", (req, res) => {
+  res.render("teacher-login", { message: "" });
+});
+
+app.post("/teacher-login", (req, res) => {
+  const username = req.body.username.trim();
+  const password = req.body.password.trim();
+
+  if (username === "PVN@teacher" && password === "PVN@circular") {
+    req.session.teacher = true;
+    res.redirect("/post-circular");
+  } else {
+    res.render("teacher-login", { message: "Invalid username or password" });
+  }
+});
+
+app.get("/post-circular", (req, res) => {
+  res.render("post-circular", { message: "" });
+});
+
+
+app.post("/post-circular", async (req, res) => {
+  if (req.session.teacher) {
+    const { title, classes, date, day, content } = req.body;
+    const circular = new Circular({
+      title,
+      classes,
+      date,
+      day,
+      content,
+    });
+    try {
+      await circular.save();
+      console.log("Circular saved:", circular);
+      res.render("post-circular", { message: "Circular posted successfully" });
+    } catch (error) {
+      console.error("Error posting circular:", error);
+      res.render("post-circular", { message: "Failed to post circular" });
+    }
+  } else {
+    res.redirect("/teacher-login");
+  }
 });
 
 app.listen(5500, function () {

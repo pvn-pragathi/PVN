@@ -1,0 +1,31 @@
+<%- include('header') -%>
+
+<h1 class="h1">Admin Panel</h1>
+  <% if (message == "File uploaded successfully") { %>
+    <div class="success-message"><%= message %></div>
+  <% } else { %>
+  <div class="error-message"><%= message %></div>
+  <% } %>
+
+  <form action="/admin" method="post" enctype="multipart/form-data" class="admission-form">
+
+    <div class="mb-4">
+      <label for="username" class="form-label">Username : </label>
+      <input type="text" name="username" id="username" class="form-control" required>
+    </div>
+
+    <div class="mb-4">
+      <label for="password" class="form-label">Password : </label>
+      <input type="password" class="form-control" id="password" name="password" required>
+    </div>
+
+    <div class="mb-4">
+      <label for="studentname" class="form-label">Upload <strong>school-data.xlsx</strong> : </label>
+      <input type="file" name="file" class="form-control" required>
+    </div>
+
+    <button type="submit" class="mt-5 btn btn-primary btn-lg">Upload</button>
+
+  </form>
+
+<%- include('footer') -%>

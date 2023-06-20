@@ -312,10 +312,17 @@ td {
     flex-wrap: wrap;
     flex-direction: row;
     justify-content: center;
+    min-width: 85vw;
 }
 
-.image-gallery .gallery-image .image{
-    width: 20rem;
+.gallery-image{
+    width: 18rem;
+}
+
+.image-text{
+    font-size: 1.3rem;
+    text-align: center;
+    width: 18rem;
 }
 
 @media screen and (max-width: 992px) {

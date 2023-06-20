@@ -1,0 +1,20 @@
+<%- include('header') -%>
+
+<h1 class="h1 mb-5">Teacher Login Panel</h1>
+  <% if (message) { %>
+    <p><%= message %></p>
+  <% } %>
+  <form action="/teacher-login" method="POST" class="admission-form">
+    <div class="mb-5">
+      <label for="username" class="form-label">Username:</label>
+      <input type="text" id="username" name="username" class="form-control" required>
+    </div>
+    <div class="mb-5">
+      <label for="password" class="form-label">Password:</label>
+      <input type="password" id="password" name="password" class="form-control" required>
+    </div>
+    <button class="btn btn-primary btn-lg" type="submit">Login</button>
+  </form>
+  
+
+<%- include('footer') -%>

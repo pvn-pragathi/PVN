@@ -1,0 +1,65 @@
+<%- include('header') -%>
+
+<!-- post-circular.ejs -->
+
+<h1 class="h1 mb-5">Post Circular</h1>
+
+<form action="/post-circular" method="POST" class="admission-form">
+  <div class="mb-5">
+    <label for="title" class="form-label">Title:</label>
+    <input type="text" id="title" name="title" class="form-control" required>
+  </div>
+  <div class="mb-5">
+    <label class="form-label">Classes:</label>
+    <div class="mb-4">
+      <label for="lkg" class="form-label">
+        <input type="checkbox" id="lkg" name="classes" value="LKG">
+        LKG
+      </label>
+    </div>
+    <div class="mb-4">
+      <label for="ukg" class="form-label">
+        <input type="checkbox" id="ukg" name="classes" value="UKG">
+        UKG
+      </label>
+    </div>
+    <% for (let i = 1; i <= 10; i++) { %>
+      <div class="mb-4">
+        <label for="class<%= i %>" class="form-label">
+          <input type="checkbox" id="class<%= i %>" name="classes" value="<%= i %>th Class">
+          <%= i %>th Class
+        </label>
+      </div>
+    <% } %>
+  </div>
+  <div class="mb-5">
+    <label for="date" class="form-label">Date:</label>
+    <input type="date" id="date" name="date" class="form-control" required>
+  </div>
+  <div class="mb-5">
+    <label for="day" class="form-label">Day:</label>
+    <select id="day" name="day" class="form-select" required>
+      <option value="" selected disabled>Select a day</option>
+      <option value="Monday">Monday</option>
+      <option value="Tuesday">Tuesday</option>
+      <option value="Wednesday">Wednesday</option>
+      <option value="Thursday">Thursday</option>
+      <option value="Friday">Friday</option>
+      <option value="Saturday">Saturday</option>
+      <option value="Sunday">Sunday</option>
+    </select>
+  </div>
+  <div class="mb-5">
+    <label for="content" class="form-label">Content:</label>
+    <textarea id="content" name="content" class="form-control" rows="10" required></textarea>
+  </div>
+  <div class="mb-5">
+    <button type="submit" class="btn btn-lg btn-primary">Post</button>
+  </div>
+</form>
+
+<% if (message) { %>
+  <p><%= message %></p>
+<% } %>
+
+<%- include('footer') -%>
