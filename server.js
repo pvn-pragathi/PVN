@@ -2,13 +2,20 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const nodemailer = require("nodemailer");
 const session = require("express-session");
-const xlsx = require("xlsx");
 const https = require("https");
 const multer = require("multer");
 const fs = require("fs");
 const mongoose = require("mongoose");
+const methodOverride = require("method-override");
+const http = require('http');
+const socketIO = require('socket.io');
+const Student = require("./models/student");
+const Circular = require("./models/circular");
+const { populateDatabaseFromExcel, getLatestFilePath } = require("./utils");
 
 const app = express();
+const server = http.createServer(app);
+const io = socketIO(server);
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
@@ -20,6 +27,8 @@ app.use(
     saveUninitialized: true,
   })
 );
+
+app.use(methodOverride("_method"));
 
 // MongoDB connection
 mongoose
@@ -41,43 +50,7 @@ db.once("open", () => {
   console.log("Connected to MongoDB");
 });
 
-// Define Mongoose schema and models for circulars
-const circularSchema = new mongoose.Schema({
-  title: String,
-  classes: [String],
-  date: String,
-  day: String,
-  content: String,
-});
-
-const Circular = mongoose.model("Circular", circularSchema);
-
-// Populate database from Excel on server startup
-async function populateDatabaseFromExcel(filePath) {
-  try {
-    await Student.deleteMany();
-
-    const workbook = xlsx.readFile(filePath);
-    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-    const jsonData = xlsx.utils.sheet_to_json(worksheet);
-
-    for (let i = 0; i < jsonData.length; i++) {
-      const data = jsonData[i];
-      console.log("Data:", data);
-      const student = new Student(data);
-      await student.save();
-      console.log("Student saved:", student);
-    }
-
-    console.log("Database populated successfully.");
-  } catch (error) {
-    console.error("Error populating database:", error);
-  }
-}
-
 const excelFilePath = `${__dirname}/student-details/school-data.xlsx`;
-populateDatabaseFromExcel(excelFilePath);
-
 const upload = multer({ dest: "/multer" });
 
 // Routes
@@ -92,7 +65,7 @@ app.post("/admin", upload.single("file"), async function (req, res) {
   if (username === "PVN@admin" && password === "PVN@website") {
     if (req.file) {
       const newFilePath = "student-details/" + req.file.originalname;
-      const previousFilePath = getLatestFilePath();
+      const previousFilePath = getLatestFilePath("student-details/");
 
       if (previousFilePath) {
         fs.unlinkSync(previousFilePath);
@@ -101,7 +74,6 @@ app.post("/admin", upload.single("file"), async function (req, res) {
       fs.renameSync(req.file.path, newFilePath);
       res.render("admin", { message: "File uploaded successfully" });
 
-      // Update the database with the new file
       try {
         await populateDatabaseFromExcel(newFilePath);
         console.log("Database updated successfully.");
@@ -119,27 +91,13 @@ app.post("/admin", upload.single("file"), async function (req, res) {
   }
 });
 
-function getLatestFilePath() {
-  const directoryPath = "student-details/";
-  const files = fs.readdirSync(directoryPath);
-
-  if (files.length === 0) {
-    return null;
-  }
-
-  files.sort(function (a, b) {
-    return (
-      fs.statSync(directoryPath + b).mtime.getTime() -
-      fs.statSync(directoryPath + a).mtime.getTime()
-    );
-  });
-
-  return directoryPath + files[0];
-}
 
 app.post("/student-login", async (req, res) => {
   const aadharNumber = req.body.aadhar.replace(/\s/g, "");
   const password = req.body.password;
+
+  
+  populateDatabaseFromExcel(excelFilePath);
 
   try {
     const student = await Student.findOne({ "Aadhar Number": aadharNumber });
@@ -187,14 +145,14 @@ function sendEmail(content) {
   const transporter = nodemailer.createTransport({
     service: "Gmail",
     auth: {
-      user: "pragathiutility@gmail.com", // replace with your email address
-      pass: "tqbntkujmegkesmu", // replace with your email password
+      user: "pragathiutility@gmail.com",
+      pass: "tqbntkujmegkesmu",
     },
   });
 
   const mailOptions = {
-    from: "pragathiutility@gmail.com", // replace with your email address
-    to: "pragathiutility@gmail.com", // replace with the recipient email address
+    from: "pragathiutility@gmail.com",
+    to: "pragathiutility@gmail.com",
     subject: "New Admission",
     text: content,
   };
@@ -203,7 +161,7 @@ function sendEmail(content) {
 }
 
 app.get("/", function (req, res) {
-  res.render("index");
+  res.render("index"); 
 });
 
 app.get("/about", function (req, res) {
@@ -222,10 +180,26 @@ app.get("/admission", function (req, res) {
   res.render("admission", { submitted, error });
 });
 
-app.post("/admission", function (req, res) {});
+app.post("/admission", function(req, res){
+  const formData = req.body;
+  const formattedData = `Name: ${formData.studentname}\nMother Name: ${formData.mothername}\nFather Name: ${formData.fathername}\nStudent age: ${formData.age}\nDOB: ${formData.dob}\nAdmission Class: ${formData.admissioninto}\nAddress: ${formData.address}\nAadhar No: ${formData.aadhar}\nContact-1: ${formData.contact1}\nContact-2: ${formData.contact2}`;
+
+  sendEmail(formattedData)
+      .then(() => {
+          // Set a flag to indicate successful form submission
+          req.session.submitted = true;
+          res.redirect('/admission');
+      })
+      .catch((error) => {
+          console.error('Error sending email:', error);
+          // Set an error flag to indicate form submission error
+          req.session.error = true;
+          res.redirect('/admission');
+      });
+});
 
 const access_token =
-  "EAAXtoFVnzq8BAFsCeI9M3HMCtjSzVKy3LJdlCXtxPiVwmaW0g0jDZClxMBgr4SSimjiBLCsXnBYPp06cOXKyCwKRnrhZBxihajA82FyuSZCeFAKIdMZB3MPnc8CKeZBJqBR0hppSZBbf7sZAqcCCaxZAsEKl85ovq7tOg7hDJocLC572X7uPcGYt";
+  "EAAXtoFVnzq8BAJ3ZBnEowiBH2H0lN6F1aTbH0G0tXnVWDzSwsc7gK7u4qRSATu55PkWJ1kriCKnLi0Sov0eTZAH21BqD5P3RbZBuepczZBUqZANIG2lcKe3FleqWhWwE0ku1xnmJD1hHlmZCQrtB8uZC08fHBKNRthQOi1zIRvA3K1pFyk7yl3v";
 
 app.get("/gallery", function (req, res) {
   const facebook_url_endpoint =
@@ -266,12 +240,13 @@ app.get("/student-login", (req, res) => {
 app.get("/circulars", async (req, res) => {
   try {
     const circulars = await Circular.find();
-    res.render("circulars", { circulars, message: "" });
+    res.render("circulars", { circulars, message: "", teacherLoggedIn: req.session.teacher });
   } catch (error) {
     console.error("Error retrieving circulars:", error);
-    res.render("circulars", { circulars: [], message: "Error retrieving circulars" });
+    res.render("circulars", { circulars: [], message: "Error retrieving circulars", teacherLoggedIn: req.session.teacher });
   }
 });
+
 
 app.get("/teacher-login", (req, res) => {
   res.render("teacher-login", { message: "" });
@@ -293,29 +268,50 @@ app.get("/post-circular", (req, res) => {
   res.render("post-circular", { message: "" });
 });
 
-
 app.post("/post-circular", async (req, res) => {
+  if (!req.session.teacher) {
+    return res.redirect("/teacher-login");
+  }
+
+  const { title, classes, date, day, content } = req.body;
+  const circular = new Circular({
+    title,
+    classes,
+    date,
+    day,
+    content,
+  });
+
+  try {
+    await circular.save();
+    console.log("Circular saved:", circular);
+
+    io.emit('newCircular', circular);
+    return res.redirect("/post-circular");
+  } catch (error) {
+    console.error("Error posting circular:", error);
+    return res.redirect("/post-circular");
+  }
+});
+
+
+app.delete("/circulars/:id", async (req, res) => {
   if (req.session.teacher) {
-    const { title, classes, date, day, content } = req.body;
-    const circular = new Circular({
-      title,
-      classes,
-      date,
-      day,
-      content,
-    });
+    const circularId = req.params.id;
+
     try {
-      await circular.save();
-      console.log("Circular saved:", circular);
-      res.render("post-circular", { message: "Circular posted successfully" });
+      await Circular.findByIdAndDelete(circularId);
+      console.log("Circular deleted:", circularId);
+      res.redirect("/circulars");
     } catch (error) {
-      console.error("Error posting circular:", error);
-      res.render("post-circular", { message: "Failed to post circular" });
+      console.error("Error deleting circular:", error);
+      res.redirect("/circulars");
     }
   } else {
     res.redirect("/teacher-login");
   }
 });
+
 
 app.listen(5500, function () {
   console.log("Server started at port 5500.");

@@ -4,6 +4,10 @@
 
 <h1 class="h1 mb-5">Post Circular</h1>
 
+<% if (message) { %>
+  <p class="success-message"><%= message %></p>
+<% } %>
+
 <form action="/post-circular" method="POST" class="admission-form">
   <div class="mb-5">
     <label for="title" class="form-label">Title:</label>
@@ -26,8 +30,8 @@
     <% for (let i = 1; i <= 10; i++) { %>
       <div class="mb-4">
         <label for="class<%= i %>" class="form-label">
-          <input type="checkbox" id="class<%= i %>" name="classes" value="<%= i %>th Class">
-          <%= i %>th Class
+          <input type="checkbox" id="class<%= i %>" name="classes" value="<%= i %> Class">
+          <%= i %> Class
         </label>
       </div>
     <% } %>
@@ -57,9 +61,5 @@
     <button type="submit" class="btn btn-lg btn-primary">Post</button>
   </div>
 </form>
-
-<% if (message) { %>
-  <p><%= message %></p>
-<% } %>
 
 <%- include('footer') -%>

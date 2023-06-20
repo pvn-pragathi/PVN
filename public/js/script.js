@@ -34,3 +34,19 @@ function validateForm(event) {
     event.preventDefault();
   }
 }
+
+const socket = io();
+
+socket.on('newCircular', (circular) => {
+  $.notify({
+    title: 'New Circular Posted',
+    message: circular.title,
+    icon: 'fa fa-bell'
+  },{
+    type: 'info',
+    placement: {
+      from: 'top',
+      align: 'right'
+    }
+  });
+});

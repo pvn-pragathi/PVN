@@ -1,6 +1,9 @@
 <%- include('header') -%>
 
-<!-- circulars.ejs -->
+<!-- In your EJS template for the circulars page -->
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/main.js"></script>
+
 
 <style>
   .circular {
@@ -8,10 +11,9 @@
     border: 1px solid #ccc;
     padding: 10px;
     margin-bottom: 20px;
-    width: 80vw;
+    width: 85vw;
     margin: auto;
     border-radius: 10px;
-    margin-bottom: 8vh;
   }
 
   .circular h3 {
@@ -21,24 +23,34 @@
   .circular p {
     margin: 5px 0;
   }
+
+  .delete-btn {
+    display: none;
+    margin-top: 10px;
+  }
 </style>
 
 <h1 class="h1">Circulars</h1>
 
 <% if (circulars.length === 0) { %>
-  <p>No circulars found.</p>
+  <p class="h1">No circulars found.</p>
 <% } else { %>
   <% circulars.forEach(function(circular) { %>
     <div class="circular">
-      <h3><%= circular.title %></h3>
+      <h3 class="mb-5"><%= circular.title %></h3>
       <p><strong>For Classes:</strong> <%= circular.classes.join(', ') %></p>
       <p><strong>Day:</strong> <%= circular.day %></p>
       <p><strong>Date:</strong> <%= circular.date %></p>
-      <p><%= circular.content %></p>
+      <p><strong>Dear Parents,</strong></p>
+      <p class="circular-content mb-3"><%= circular.content %></p>
+
+      <% if (teacherLoggedIn) { %>
+        <form action="/circulars/<%= circular._id %>?_method=DELETE" method="POST">
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+      <% } %>
     </div>
   <% }); %>
 <% } %>
 
 <%- include('footer') -%>
-
-  
