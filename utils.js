@@ -3,31 +3,25 @@
 const xlsx = require("xlsx");
 const fs = require("fs");
 const Student = require("./models/student");
+const nodemailer = require("nodemailer");
 
-function populateDatabaseFromExcel(filePath) {
-  return new Promise((resolve, reject) => {
-    Student.deleteMany({}, (error) => {
-      if (error) {
-        reject(error);
-      } else {
-        const workbook = xlsx.readFile(filePath);
-        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-        const jsonData = xlsx.utils.sheet_to_json(worksheet);
+async function populateDatabaseFromExcel(filePath) {
+  try {
+    await Student.deleteMany({});
 
-        const students = jsonData.map((data) => new Student(data));
+    const workbook = xlsx.readFile(filePath);
+    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+    const jsonData = xlsx.utils.sheet_to_json(worksheet);
 
-        Student.insertMany(students)
-          .then(() => {
-            console.log("Database populated successfully.");
-            resolve();
-          })
-          .catch((error) => {
-            reject(error);
-          });
-      }
-    });
-  });
+    const students = jsonData.map((data) => new Student(data));
+
+    await Student.insertMany(students);
+    console.log("Database populated successfully.");
+  } catch (error) {
+    throw error;
+  }
 }
+
 
 function getLatestFilePath(directoryPath) {
   const files = fs.readdirSync(directoryPath);
@@ -46,7 +40,27 @@ function getLatestFilePath(directoryPath) {
   return directoryPath + files[0];
 }
 
+function sendEmail(content) {
+  const transporter = nodemailer.createTransport({
+    service: "Gmail",
+    auth: {
+      user: "pragathiutility@gmail.com",
+      pass: "tqbntkujmegkesmu",
+    },
+  });
+
+  const mailOptions = {
+    from: "pragathiutility@gmail.com",
+    to: "pragathiutility@gmail.com",
+    subject: "New Admission",
+    text: content,
+  };
+
+  return transporter.sendMail(mailOptions);
+}
+
 module.exports = {
   populateDatabaseFromExcel,
   getLatestFilePath,
+  sendEmail,
 };

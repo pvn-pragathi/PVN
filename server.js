@@ -1,6 +1,5 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const nodemailer = require("nodemailer");
 const session = require("express-session");
 const https = require("https");
 const multer = require("multer");
@@ -11,7 +10,7 @@ const http = require('http');
 const socketIO = require('socket.io');
 const Student = require("./models/student");
 const Circular = require("./models/circular");
-const { populateDatabaseFromExcel, getLatestFilePath } = require("./utils");
+const { populateDatabaseFromExcel, getLatestFilePath , sendEmail} = require("./utils");
 
 const app = express();
 const server = http.createServer(app);
@@ -140,25 +139,6 @@ app.post("/student-login", async (req, res) => {
     });
   }
 });
-
-function sendEmail(content) {
-  const transporter = nodemailer.createTransport({
-    service: "Gmail",
-    auth: {
-      user: "pragathiutility@gmail.com",
-      pass: "tqbntkujmegkesmu",
-    },
-  });
-
-  const mailOptions = {
-    from: "pragathiutility@gmail.com",
-    to: "pragathiutility@gmail.com",
-    subject: "New Admission",
-    text: content,
-  };
-
-  return transporter.sendMail(mailOptions);
-}
 
 app.get("/", function (req, res) {
   res.render("index"); 
