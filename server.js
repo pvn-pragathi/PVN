@@ -11,6 +11,7 @@ const socketIO = require('socket.io');
 const Student = require("./models/student");
 const Circular = require("./models/circular");
 const { populateDatabaseFromExcel, getLatestFilePath , sendEmail} = require("./utils");
+const PORT = process.env.PORT || 3030;
 
 const app = express();
 const server = http.createServer(app);
@@ -179,7 +180,7 @@ app.post("/admission", function(req, res){
 });
 
 const access_token =
-  "EAAXtoFVnzq8BAJ3ZBnEowiBH2H0lN6F1aTbH0G0tXnVWDzSwsc7gK7u4qRSATu55PkWJ1kriCKnLi0Sov0eTZAH21BqD5P3RbZBuepczZBUqZANIG2lcKe3FleqWhWwE0ku1xnmJD1hHlmZCQrtB8uZC08fHBKNRthQOi1zIRvA3K1pFyk7yl3v";
+  "EAAXtoFVnzq8BAEZCUe2IklvYZAwiEFJ8NI4S1InUpvKAL2RdhDpeHA1uI3ZBo5ZCNmvUJMqxYSLgN8uSOwDJX0nFmCiykMvBBxUBZAYlYpRgj1qNqwcuseWzmSUkSj15hPuRwcBtgOEEO9SnmUYWyjotQsycof68Sv9mtqDZBZBSN9OOCZCfSQAt";
 
 app.get("/gallery", function (req, res) {
   const facebook_url_endpoint =
@@ -293,6 +294,6 @@ app.delete("/circulars/:id", async (req, res) => {
 });
 
 
-app.listen(5500, function () {
-  console.log("Server started at port 5500.");
+app.listen(PORT, function () {
+  console.log(`Server started at port ${PORT}.`);
 });
