@@ -51,7 +51,7 @@ db.once("open", () => {
 });
 
 const excelFilePath = `${__dirname}/student-details/school-data.xlsx`;
-const upload = multer({ dest: "/multer" });
+const upload = multer({ dest: `${__dirname}/multer` });
 
 // Routes
 app.get("/admin", function (req, res) {
