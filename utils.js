@@ -1,5 +1,3 @@
-// utils.js
-
 const xlsx = require("xlsx");
 const fs = require("fs");
 const Student = require("./models/student");
@@ -8,7 +6,8 @@ const https = require("https");
 
 const appId = "1668647766970031";
 const appSecret = "1feef404e27715163eb2da055d931b88";
-let accessToken = "EAAXtoFVnzq8BAPpXFGSTfe8sWmcZB4g784gFZCYmkW1ZAZBHUswFWe7XpKZClZAHzJsI39ryhC3P5ZCbKGWWGa1sECZC31Rxq0QeoijZBxMbHq8KI2TEZAi7QZBbxuk9S0jCEDJWiL1BDSYdzRg4xFa6t8oNO3LS8t8d0PRDN9MYbUUKsZClrBfP6ZBzLZC05DWUbLJjEIBQx9qvw7ZAQh1QGWm7VtWNKQNndoDBnUZD";
+let accessToken =
+  "EAAXtoFVnzq8BAExutpl317ko15Ei0Ttolz924J90WdC4AkDqUluZBNKLd5Wivub8QHYTNLR7EIwkHLpRoSTYQZC1iKayXRC1rlZBBDxUic9sYoIRL5PVqGAICFEB59sCjsqt9JZAl4VXsZCNd7DZA5ZBkV48MB93KCUgbVZAyCv0Q5WGAOXJdhjV";
 
 async function populateDatabaseFromExcel(filePath) {
   try {
@@ -26,7 +25,6 @@ async function populateDatabaseFromExcel(filePath) {
     throw error;
   }
 }
-
 
 function getLatestFilePath(directoryPath) {
   const files = fs.readdirSync(directoryPath);
@@ -64,7 +62,6 @@ function sendEmail(content) {
   return transporter.sendMail(mailOptions);
 }
 
-
 function fetchNewAccessToken(callback) {
   const endpoint = `https://graph.facebook.com/v13.0/oauth/access_token?grant_type=fb_exchange_token&client_id=${appId}&client_secret=${appSecret}&fb_exchange_token=${accessToken}`;
 
@@ -93,8 +90,6 @@ function renewAccessToken(callback) {
     }
   });
 }
-
-
 
 module.exports = {
   populateDatabaseFromExcel,

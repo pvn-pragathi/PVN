@@ -179,12 +179,6 @@ app.post("/admission", function(req, res){
 
 cron.schedule("0 * * * *", renewAccessToken);
 
-app.get("/fb-token", function (req, res) {
-  renewAccessToken(function () {
-    res.send("Access token renewed successfully!");
-  });
-});
-
 app.get("/gallery", function (req, res) {
   const facebook_url_endpoint =
     "https://graph.facebook.com/me/accounts/?fields=albums{id,name,photos{id,name,images}}&access_token=" + accessToken
