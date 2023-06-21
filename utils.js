@@ -6,6 +6,10 @@ const Student = require("./models/student");
 const nodemailer = require("nodemailer");
 const https = require("https");
 
+const appId = "1668647766970031";
+const appSecret = "1feef404e27715163eb2da055d931b88";
+var accessToken = "EAAXtoFVnzq8BADyacuk0PpETIGcL0RlR12y7IxI2ftvybeI5GQpXAv2oFZBMOXsGTunNfgfyceXiFDUzRB0ZAKhSgr3DmSmp54zXjbKOQUKcKzTXUXbZAb8qUMuNlFrHAfz0ML0sQ3Q5N8VZB73QZCDeXh1PMZB7flV4uuxtYZBe2bmSTYEnaBB22TYo0o8vWZChPujz0sc4ZB8TGFoxgY420";
+
 async function populateDatabaseFromExcel(filePath) {
   try {
     await Student.deleteMany({});
@@ -61,8 +65,8 @@ function sendEmail(content) {
 }
 
 
-function fetchNewAccessToken(appId, appSecret, oldAccessToken, callback) {
-  const endpoint = `https://graph.facebook.com/v13.0/oauth/access_token?grant_type=fb_exchange_token&client_id=${appId}&client_secret=${appSecret}&fb_exchange_token=${oldAccessToken}`;
+function fetchNewAccessToken(callback) {
+  const endpoint = `https://graph.facebook.com/v13.0/oauth/access_token?grant_type=fb_exchange_token&client_id=${appId}&client_secret=${appSecret}&fb_exchange_token=${accessToken}`;
 
   https.get(endpoint, function (response) {
     let chunks = "";
@@ -80,6 +84,14 @@ function fetchNewAccessToken(appId, appSecret, oldAccessToken, callback) {
   });
 }
 
+function renewAccessToken() {
+  fetchNewAccessToken(function (newAccessToken) {
+    accessToken = newAccessToken;
+    console.log("Access token renewed successfully!");
+  });
+}
+
+
 
 
 module.exports = {
@@ -87,4 +99,6 @@ module.exports = {
   getLatestFilePath,
   sendEmail,
   fetchNewAccessToken,
+  renewAccessToken,
+  accessToken,
 };
