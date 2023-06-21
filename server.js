@@ -13,6 +13,7 @@ const Circular = require("./models/circular");
 const { populateDatabaseFromExcel, getLatestFilePath , sendEmail, fetchNewAccessToken, renewAccessToken, accessToken} = require("./utils");
 const PORT = process.env.PORT || 3030;
 const cron = require("node-cron");
+const path = require("path");
 
 const app = express();
 const server = http.createServer(app);
@@ -31,8 +32,11 @@ app.use(
 
 app.use(methodOverride("_method"));
 
+uri = "mongodb+srv://pvn-pragathi:Pragathi%4012345@pvn.pyygowi.mongodb.net/studentDataDB?retryWrites=true&w=majority";
+
+
 mongoose
-  .connect("mongodb://127.0.0.1/studentDataDB", {
+  .connect("uri", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
