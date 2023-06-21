@@ -180,12 +180,17 @@ app.post("/admission", function(req, res){
       });
 });
 
+<<<<<<< HEAD
 cron.schedule("0 * * * *", renewAccessToken);
 
 app.get("/fb-token", function (req, res) {
   renewAccessToken();
   res.send("Access token renewed successfully!");
 });
+=======
+const access_token =
+  "EAAXtoFVnzq8BAAJPAh2S9M3sSbfRg4LMhCjiXivdX6YgJLUNg5JC1KZBqWJMs9L7PZC6mhZCxAeXmCSYZCz5brZAvJUgjFzvJSMCtPa3hfqe0daoDpGnCjmJNBZBUJU175yaNlC5lOzgIBiK3EBYJGV04m1mYDzz1hnpz9PJZAASS9ij3AUbTpQ";
+>>>>>>> 346ae12234bb4f78ae2303d3d62542a700d531ce
 
 app.get("/gallery", function (req, res) {
   const facebook_url_endpoint =
