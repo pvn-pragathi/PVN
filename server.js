@@ -31,7 +31,6 @@ app.use(
 
 app.use(methodOverride("_method"));
 
-// MongoDB connection
 mongoose
   .connect("mongodb://127.0.0.1/studentDataDB", {
     useNewUrlParser: true,
@@ -54,7 +53,6 @@ db.once("open", () => {
 const excelFilePath = `${__dirname}/student-details/school-data.xlsx`;
 const upload = multer({ dest: `${__dirname}/multer` });
 
-// Routes
 app.get("/admin", function (req, res) {
   res.render("admin", { message: "" });
 });
@@ -91,7 +89,6 @@ app.post("/admin", upload.single("file"), async function (req, res) {
     res.render("admin", { message: "Invalid username or password" });
   }
 });
-
 
 app.post("/student-login", async (req, res) => {
   const aadharNumber = req.body.aadhar.replace(/\s/g, "");
@@ -183,8 +180,9 @@ app.post("/admission", function(req, res){
 cron.schedule("0 * * * *", renewAccessToken);
 
 app.get("/fb-token", function (req, res) {
-  renewAccessToken();
-  res.send("Access token renewed successfully!");
+  renewAccessToken(function () {
+    res.send("Access token renewed successfully!");
+  });
 });
 
 app.get("/gallery", function (req, res) {

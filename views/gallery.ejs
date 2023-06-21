@@ -1,6 +1,7 @@
 <%- include('header') -%>
 
 <div class="container">
+  <% if (albums) { %>
     <% albums.forEach(album => { %>
       <% if (album.name !== "Profile pictures" && album.photos && album.photos.data) { %>
         <div class="album-section">
@@ -16,9 +17,10 @@
         </div>
       <% } %>
     <% }); %>
-  </div>
-  
-  
-  
+  <% } else { %>
+    <p><%= message %></p>
+  <% } %>
+</div>
+
 
 <%- include('footer') -%>   

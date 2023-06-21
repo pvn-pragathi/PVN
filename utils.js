@@ -8,7 +8,7 @@ const https = require("https");
 
 const appId = "1668647766970031";
 const appSecret = "1feef404e27715163eb2da055d931b88";
-var accessToken = "EAAXtoFVnzq8BADyacuk0PpETIGcL0RlR12y7IxI2ftvybeI5GQpXAv2oFZBMOXsGTunNfgfyceXiFDUzRB0ZAKhSgr3DmSmp54zXjbKOQUKcKzTXUXbZAb8qUMuNlFrHAfz0ML0sQ3Q5N8VZB73QZCDeXh1PMZB7flV4uuxtYZBe2bmSTYEnaBB22TYo0o8vWZChPujz0sc4ZB8TGFoxgY420";
+let accessToken = "EAAXtoFVnzq8BAPpXFGSTfe8sWmcZB4g784gFZCYmkW1ZAZBHUswFWe7XpKZClZAHzJsI39ryhC3P5ZCbKGWWGa1sECZC31Rxq0QeoijZBxMbHq8KI2TEZAi7QZBbxuk9S0jCEDJWiL1BDSYdzRg4xFa6t8oNO3LS8t8d0PRDN9MYbUUKsZClrBfP6ZBzLZC05DWUbLJjEIBQx9qvw7ZAQh1QGWm7VtWNKQNndoDBnUZD";
 
 async function populateDatabaseFromExcel(filePath) {
   try {
@@ -84,13 +84,15 @@ function fetchNewAccessToken(callback) {
   });
 }
 
-function renewAccessToken() {
+function renewAccessToken(callback) {
   fetchNewAccessToken(function (newAccessToken) {
     accessToken = newAccessToken;
     console.log("Access token renewed successfully!");
+    if (callback) {
+      callback();
+    }
   });
 }
-
 
 
 
