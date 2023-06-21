@@ -32,11 +32,10 @@ app.use(
 
 app.use(methodOverride("_method"));
 
-uri = "mongodb+srv://pvn-pragathi:Pragathi%4012345@pvn.pyygowi.mongodb.net/studentDataDB?retryWrites=true&w=majority";
 
 
 mongoose
-  .connect("uri", {
+  .connect("mongodb+srv://pvn-pragathi:Pragathi%4012345@pvn.pyygowi.mongodb.net/?retryWrites=true&w=majority", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
