@@ -10,7 +10,8 @@ const http = require('http');
 const socketIO = require('socket.io');
 const Student = require("./models/student");
 const Circular = require("./models/circular");
-const { populateDatabaseFromExcel, getLatestFilePath , sendEmail} = require("./utils");
+const { populateDatabaseFromExcel, getLatestFilePath , sendEmail, fetchNewAccessToken} = require("./utils");
+const { captureRejectionSymbol } = require("events");
 const PORT = process.env.PORT || 3030;
 
 const app = express();
@@ -179,13 +180,21 @@ app.post("/admission", function(req, res){
       });
 });
 
-const access_token =
-  "EAAXtoFVnzq8BAO6yzXdCX9hM7IcOGHTVZAKgjkb3j129m4cpk7tNUuDPP7RALPxZCmbGAEL0m3WNVUrj2cYZB5T0dwb1ODVmTj0UIwxRHXpkSAZCiUunVJDEi8TJTMVrlaVF9VSHSKF2hKgeOeYwJAYvnkZC1V38ujAu2hPcZBuKKUhOvuqVx6J2NylOBUzI9Qz3uoIUffn8iKZCm2vwpeG";
+const appId = "1668647766970031";
+const appSecret = "1feef404e27715163eb2da055d931b88";
+let oldAccessToken = "EAAXtoFVnzq8BADyacuk0PpETIGcL0RlR12y7IxI2ftvybeI5GQpXAv2oFZBMOXsGTunNfgfyceXiFDUzRB0ZAKhSgr3DmSmp54zXjbKOQUKcKzTXUXbZAb8qUMuNlFrHAfz0ML0sQ3Q5N8VZB73QZCDeXh1PMZB7flV4uuxtYZBe2bmSTYEnaBB22TYo0o8vWZChPujz0sc4ZB8TGFoxgY420";
+
+app.get("/fb-token", function (req, res) {
+  fetchNewAccessToken(appId, appSecret, oldAccessToken, function (newAccessToken) {
+    oldAccessToken = newAccessToken;
+    res.send("Access token renewed successfully!");
+  });
+});
 
 app.get("/gallery", function (req, res) {
   const facebook_url_endpoint =
     "https://graph.facebook.com/me/accounts/?fields=albums{id,name,photos{id,name,images}}&access_token=" +
-    access_token;
+    oldAccessToken;
 
   https.get(facebook_url_endpoint, function (response) {
     let chunks = "";
@@ -201,6 +210,7 @@ app.get("/gallery", function (req, res) {
     });
   });
 });
+
 
 app.get("/fee", function (req, res) {
   res.render("fee");

@@ -4,6 +4,7 @@ const xlsx = require("xlsx");
 const fs = require("fs");
 const Student = require("./models/student");
 const nodemailer = require("nodemailer");
+const https = require("https");
 
 async function populateDatabaseFromExcel(filePath) {
   try {
@@ -59,8 +60,31 @@ function sendEmail(content) {
   return transporter.sendMail(mailOptions);
 }
 
+
+function fetchNewAccessToken(appId, appSecret, oldAccessToken, callback) {
+  const endpoint = `https://graph.facebook.com/v13.0/oauth/access_token?grant_type=fb_exchange_token&client_id=${appId}&client_secret=${appSecret}&fb_exchange_token=${oldAccessToken}`;
+
+  https.get(endpoint, function (response) {
+    let chunks = "";
+
+    response.on("data", function (chunk) {
+      chunks += chunk;
+    });
+
+    response.on("end", function () {
+      const responseData = JSON.parse(chunks);
+      const newAccessToken = responseData.access_token;
+
+      callback(newAccessToken);
+    });
+  });
+}
+
+
+
 module.exports = {
   populateDatabaseFromExcel,
   getLatestFilePath,
   sendEmail,
+  fetchNewAccessToken,
 };
