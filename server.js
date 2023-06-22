@@ -10,10 +10,11 @@ const http = require('http');
 const socketIO = require('socket.io');
 const Student = require("./models/student");
 const Circular = require("./models/circular");
-const { populateDatabaseFromExcel, getLatestFilePath , sendEmail, fetchNewAccessToken, renewAccessToken, accessToken} = require("./utils");
+const { populateDatabaseFromExcel, getLatestFilePath , sendEmail} = require("./utils");
 const PORT = process.env.PORT || 3030;
 const cron = require("node-cron");
 const path = require("path");
+const axios = require("axios");
 
 const app = express();
 const server = http.createServer(app);
@@ -32,8 +33,11 @@ app.use(
 
 app.use(methodOverride("_method"));
 
+const uri = 'mongodb+srv://swaroop-chikkam:630swaroop@pvn.vdv88pa.mongodb.net/studentDataDB?retryWrites=true&w=majority'
+
+
 mongoose
-  .connect("mongodb://127.0.0.1/studentDataDB", {
+  .connect(uri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -180,25 +184,50 @@ app.post("/admission", function(req, res){
 
 cron.schedule("0 * * * *", renewAccessToken);
 
-app.get("/gallery", function (req, res) {
-  const facebook_url_endpoint =
-    "https://graph.facebook.com/me/accounts/?fields=albums{id,name,photos{id,name,images}}&access_token=" + accessToken
+const appId = "1668647766970031";
+const appSecret = "1feef404e27715163eb2da055d931b88";
 
-  https.get(facebook_url_endpoint, function (response) {
-    let chunks = "";
+async function renewAccessToken(token) {
+  const url = `https://graph.facebook.com/v13.0/oauth/access_token`;
+  const params = {
+    grant_type: "fb_exchange_token",
+    client_id: appId,
+    client_secret: appSecret,
+    fb_exchange_token: token,
+  };
 
-    response.on("data", function (chunk) {
-      chunks += chunk;
-    });
+  try {
+    const response = await axios.get(url, { params });
+    const { data } = response;
+    return data.access_token;
+  } catch (error) {
+    console.error("Error renewing access token:", error);
+    throw error;
+  }
+}
 
-    response.on("end", function () {
-      const facebookData = JSON.parse(chunks);
-      const albums = facebookData.data[0].albums.data;
-      res.render("gallery", { albums: albums });
-    });
-  });
+
+
+app.get("/gallery", async function (req, res) {
+  try {
+    var initialAccessToken =
+      "EAAXtoFVnzq8BAHrNJBXOxMC92ANfPcp0MZC5evrW2KCXZC0mYL1KK98QfKtTXDA2aGj7IV3w7l8zdNZBFIHORZADh45dWWZBRK4x5NIZCMgrtGcZAFrpjHVX551OCcCtswIYZBZCZCLIg3CHyJlzdfsWrX1UMK96XFsBZCaaZBNanlxxMzIuZCIctG99qH3bJKsOB9EsqwxCjdp5d4aUqws16BQI2";
+
+    initialAccessToken = await renewAccessToken(initialAccessToken);
+
+    const facebook_url_endpoint =
+      "https://graph.facebook.com/me/accounts/?fields=albums{id,name,photos{id,name,images}}&access_token=" +
+      initialAccessToken;
+
+    const response = await axios.get(facebook_url_endpoint);
+    const facebookData = response.data;
+    const albums = facebookData.data[0].albums.data;
+    res.render("gallery", { albums: albums });
+  } catch (error) {
+    console.error("Error fetching Facebook data:", error);
+    res.status(500).send("Error fetching Facebook data");
+  }
 });
-
 
 
 app.get("/fee", function (req, res) {
@@ -264,8 +293,6 @@ app.post("/post-circular", async (req, res) => {
 
   try {
     await circular.save();
-    console.log("Circular saved:", circular);
-
     io.emit('newCircular', circular);
     return res.redirect("/post-circular");
   } catch (error) {

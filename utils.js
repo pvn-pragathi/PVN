@@ -4,9 +4,8 @@ const Student = require("./models/student");
 const nodemailer = require("nodemailer");
 const https = require("https");
 
-const appId = "1668647766970031";
-const appSecret = "1feef404e27715163eb2da055d931b88";
-let accessToken =
+
+var accessToken =
   "EAAXtoFVnzq8BAKyrB6J1Uela7YbcHUQR9VtHi8o7simxJS4QYApEZAsd6PgmmJCHMQAweysIYqttm5B3QChKWdBoZBb1J06Bq3qT52Y1B0TDSVu1YE2lnrOCVtqlZBN5q5wwZCXh2mqpTCWjU3iS8mU1ukfM6JSd8vTKHeHZCbXGSQRPDfNqSDGvhjEy9uCM6MUeKXJIk4QCKl1UTbhs2";
 
 async function populateDatabaseFromExcel(filePath) {
@@ -62,40 +61,37 @@ function sendEmail(content) {
   return transporter.sendMail(mailOptions);
 }
 
-function fetchNewAccessToken(callback) {
-  const endpoint = `https://graph.facebook.com/v13.0/oauth/access_token?grant_type=fb_exchange_token&client_id=${appId}&client_secret=${appSecret}&fb_exchange_token=${accessToken}`;
+// function fetchNewAccessToken(callback) {
+//   const endpoint = 
 
-  https.get(endpoint, function (response) {
-    let chunks = "";
+//   https.get(endpoint, function (response) {
+//     let chunks = "";
 
-    response.on("data", function (chunk) {
-      chunks += chunk;
-    });
+//     response.on("data", function (chunk) {
+//       chunks += chunk;
+//     });
 
-    response.on("end", function () {
-      const responseData = JSON.parse(chunks);
-      const newAccessToken = responseData.access_token;
+//     response.on("end", function () {
+//       const responseData = JSON.parse(chunks);
+//       const newAccessToken = responseData.access_token;
 
-      callback(newAccessToken);
-    });
-  });
-}
+//       callback(newAccessToken);
+//     });
+//   });
+// }
 
-function renewAccessToken(callback) {
-  fetchNewAccessToken(function (newAccessToken) {
-    accessToken = newAccessToken;
-    console.log("Access token renewed successfully!");
-    if (callback) {
-      callback();
-    }
-  });
-}
+// function renewAccessToken(callback) {
+//   fetchNewAccessToken(function (newAccessToken) {
+//     accessToken = newAccessToken;
+//     console.log("Access token renewed successfully!");
+//     if (callback) {
+//       callback();
+//     }
+//   });
+// }
 
 module.exports = {
   populateDatabaseFromExcel,
   getLatestFilePath,
   sendEmail,
-  fetchNewAccessToken,
-  renewAccessToken,
-  accessToken,
-};
+}
