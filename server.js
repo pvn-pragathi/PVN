@@ -99,9 +99,6 @@ app.post("/student-login", async (req, res) => {
   const aadharNumber = req.body.aadhar.replace(/\s/g, "");
   const password = req.body.password;
 
-  
-  populateDatabaseFromExcel(excelFilePath);
-
   try {
     const student = await Student.findOne({ "Aadhar Number": aadharNumber });
 
