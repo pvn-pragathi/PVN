@@ -32,10 +32,8 @@ app.use(
 
 app.use(methodOverride("_method"));
 
-
-
 mongoose
-  .connect("mongodb+srv://pvn-pragathi:Pragathi%4012345@pvn.pyygowi.mongodb.net/?retryWrites=true&w=majority", {
+  .connect("mongodb://127.0.0.1/studentDataDB", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
