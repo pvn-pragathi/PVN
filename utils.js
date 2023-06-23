@@ -4,13 +4,11 @@ const Student = require("./models/student");
 const nodemailer = require("nodemailer");
 const https = require("https");
 
-
 var accessToken =
   "EAAXtoFVnzq8BAKyrB6J1Uela7YbcHUQR9VtHi8o7simxJS4QYApEZAsd6PgmmJCHMQAweysIYqttm5B3QChKWdBoZBb1J06Bq3qT52Y1B0TDSVu1YE2lnrOCVtqlZBN5q5wwZCXh2mqpTCWjU3iS8mU1ukfM6JSd8vTKHeHZCbXGSQRPDfNqSDGvhjEy9uCM6MUeKXJIk4QCKl1UTbhs2";
 
 async function populateDatabaseFromExcel(filePath) {
   try {
-    await Student.deleteMany({});
 
     const workbook = xlsx.readFile(filePath);
     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
@@ -24,6 +22,59 @@ async function populateDatabaseFromExcel(filePath) {
     throw error;
   }
 }
+
+async function populateMarksFromExcel(filePath, examName) {
+  try {
+    const workbook = xlsx.readFile(filePath);
+    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+    const jsonData = xlsx.utils.sheet_to_json(worksheet, { header: 1 });
+
+    const headers = jsonData[1].map((header) => header.trim());
+    const marksData = jsonData.slice(2);
+
+    for (const row of marksData) {
+      const admissionNumber = row[0];
+
+      if (!admissionNumber) {
+        console.log('Invalid admission number in row:', marksData.indexOf(row) + 2);
+        continue;
+      }
+
+      const student = await Student.findOne({ 'Admission Number': admissionNumber });
+
+      if (!student) {
+        console.log('No student found with admission number:', admissionNumber);
+        continue;
+      }
+
+      const examMarks = {};
+      for (let i = 2; i < row.length; i++) {
+        const subject = headers[i];
+        const marks = row[i];
+
+        if (subject !== 'Roll Number' && subject !== 'NAME OF THE STUDENT') {
+          examMarks[subject] = marks;
+        }
+      }
+
+      const examIndex = student.exams.findIndex((exam) => exam.name === examName);
+
+      if (examIndex === -1) {
+        student.exams.push({ name: examName, marks: examMarks });
+      } else {
+        student.exams[examIndex].marks = examMarks;
+      }
+
+      await student.save();
+      console.log('Marks updated for student with admission number:', admissionNumber);
+    }
+
+    console.log('Marks population from Excel completed successfully.');
+  } catch (error) {
+    throw error;
+  }
+}
+
 
 function getLatestFilePath(directoryPath) {
   const files = fs.readdirSync(directoryPath);
@@ -62,7 +113,7 @@ function sendEmail(content) {
 }
 
 // function fetchNewAccessToken(callback) {
-//   const endpoint = 
+//   const endpoint =
 
 //   https.get(endpoint, function (response) {
 //     let chunks = "";
@@ -92,6 +143,7 @@ function sendEmail(content) {
 
 module.exports = {
   populateDatabaseFromExcel,
+  populateMarksFromExcel,
   getLatestFilePath,
   sendEmail,
-}
+};

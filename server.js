@@ -10,11 +10,13 @@ const http = require('http');
 const socketIO = require('socket.io');
 const Student = require("./models/student");
 const Circular = require("./models/circular");
-const { populateDatabaseFromExcel, getLatestFilePath , sendEmail} = require("./utils");
+const { populateDatabaseFromExcel, getLatestFilePath , sendEmail, populateMarksFromExcel} = require("./utils");
 const PORT = process.env.PORT || 3030;
 const cron = require("node-cron");
-const path = require("path");
+const path = require("path"); 
 const axios = require("axios");
+const XLSX = require("xlsx");
+
 
 const app = express();
 const server = http.createServer(app);
@@ -22,7 +24,7 @@ const io = socketIO(server);
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
-
+app.use(express.json());
 app.use(
   session({
     secret: "PRAGATHI12345",
@@ -33,8 +35,7 @@ app.use(
 
 app.use(methodOverride("_method"));
 
-const uri = 'mongodb+srv://swaroop-chikkam:630swaroop@pvn.vdv88pa.mongodb.net/studentDataDB?retryWrites=true&w=majority'
-
+const uri = "mongodb+srv://swaroop-chikkma:630swaroop@pvn.vdv88pa.mongodb.net/?retryWrites=true&w=majority"
 
 mongoose
   .connect(uri, {
@@ -48,18 +49,16 @@ mongoose
     console.error("MongoDB connection error:", error);
   });
 
+
 const db = mongoose.connection;
 
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
-db.once("open", () => {
-  console.log("Connected to MongoDB");
-});
 
 const excelFilePath = `${__dirname}/student-details/school-data.xlsx`;
 const upload = multer({ dest: `${__dirname}/multer` });
 
 app.get("/admin", function (req, res) {
-  res.render("admin", { message: "" });
+  res.render('admin', {message: "" });
 });
 
 app.post("/admin", upload.single("file"), async function (req, res) {
@@ -67,6 +66,8 @@ app.post("/admin", upload.single("file"), async function (req, res) {
   const password = req.body.password.trim();
 
   if (username === "PVN@admin" && password === "PVN@website") {
+    populateDatabaseFromExcel(excelFilePath);
+    req.session.adminAuthenticated = true;
     if (req.file) {
       const newFilePath = "student-details/" + req.file.originalname;
       const previousFilePath = getLatestFilePath("student-details/");
@@ -95,11 +96,29 @@ app.post("/admin", upload.single("file"), async function (req, res) {
   }
 });
 
+
+
+// Example usage:
+const fa1excelsheet = `${__dirname}/student-marks-sheet/results-website.xlsx`;
+const fa1 = 'FA-1';
+(async () => {
+  try {
+    await populateMarksFromExcel(fa1excelsheet, fa1);
+    // Rest of your code...
+  } catch (error) {
+    // Handle the error
+  }
+})();
+
+
+// const exam2FilePath = 'path/to/exam2.xlsx';
+// const exam2Name = 'FA-2';
+// await populateMarksFromExcel(exam2FilePath, exam2Name);
+
+
 app.post("/student-login", async (req, res) => {
   const aadharNumber = req.body.aadhar.replace(/\s/g, "");
   const password = req.body.password;
-
-  
   populateDatabaseFromExcel(excelFilePath);
 
   try {
@@ -133,7 +152,7 @@ app.post("/student-login", async (req, res) => {
     };
     req.session.studentId = student._id; // Store the student ID in the session
     res.set("Cache-Control", "no-store");
-    return res.render("student-details", { studentDetails });
+    return res.render("student-details", { studentDetails, marks: true });
 
     // Rest of the code...
   } catch (error) {
@@ -143,6 +162,7 @@ app.post("/student-login", async (req, res) => {
     });
   }
 });
+
 
 app.get("/", function (req, res) {
   res.render("index"); 
