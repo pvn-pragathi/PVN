@@ -116,6 +116,7 @@ const fa1 = 'FA-1';
 // await populateMarksFromExcel(exam2FilePath, exam2Name);
 
 
+
 app.post("/student-login", async (req, res) => {
   const aadharNumber = req.body.aadhar.replace(/\s/g, "");
   const password = req.body.password;
