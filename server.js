@@ -261,23 +261,23 @@ app.get("/fb-token", function (req, res) {
   res.send("Access token renewed successfully!");
 });
 
-app.get("/gallery", function (req, res) {
-  const facebook_url_endpoint =
-    "https://graph.facebook.com/me/accounts/?fields=albums{id,name,photos{id,name,images}}&access_token=" +
-    oldAccessToken;
+// app.get("/gallery", function (req, res) {
+//   const facebook_url_endpoint =
+//     "https://graph.facebook.com/me/accounts/?fields=albums{id,name,photos{id,name,images}}&access_token=" +
+//     oldAccessToken;
 
-  https.get(facebook_url_endpoint, function (response) {
-    let chunks = "";
-    response.on("data", function (chunk) {
-      chunks += chunk;
-    });
-    response.on("end", function () {
-      const facebookData = JSON.parse(chunks);
-      const albums = facebookData.data[0].albums.data;
-      res.render("gallery", { albums: albums });
-    });
-  });
-});
+//   https.get(facebook_url_endpoint, function (response) {
+//     let chunks = "";
+//     response.on("data", function (chunk) {
+//       chunks += chunk;
+//     });
+//     response.on("end", function () {
+//       const facebookData = JSON.parse(chunks);
+//       const albums = facebookData.data[0].albums.data;
+//       res.render("gallery", { albums: albums });
+//     });
+//   });
+// });
 
 
 
