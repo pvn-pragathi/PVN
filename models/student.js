@@ -26,7 +26,7 @@ const studentSchema = new mongoose.Schema({
   "Phone no - 1": Number,
   "Phone no - 2": Number,
   "Aadhar Number": Number,
-  exams: [examSchema],
+  "Exam Result": [examSchema],
 });
 
 const Student = mongoose.model("Student", studentSchema);

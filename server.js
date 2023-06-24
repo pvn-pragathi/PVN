@@ -13,10 +13,8 @@ const Circular = require("./models/circular");
 const { populateDatabaseFromExcel, getLatestFilePath , sendEmail, populateMarksFromExcel} = require("./utils");
 const PORT = process.env.PORT || 3030;
 const cron = require("node-cron");
-const path = require("path"); 
+const path = require("path");
 const axios = require("axios");
-const XLSX = require("xlsx");
-
 
 const app = express();
 const server = http.createServer(app);
@@ -24,7 +22,6 @@ const io = socketIO(server);
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
-app.use(express.json());
 app.use(
   session({
     secret: "PRAGATHI12345",
@@ -33,9 +30,24 @@ app.use(
   })
 );
 
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    // Specify the destination folder where uploaded files will be stored
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    // Specify a custom filename for the uploaded file
+    cb(null, file.originalname);
+  }
+});
+
+const upload = multer({ storage: storage });
+
+
+
 app.use(methodOverride("_method"));
 
-const uri = "mongodb+srv://swaroop-chikkma:630swaroop@pvn.vdv88pa.mongodb.net/?retryWrites=true&w=majority"
+const uri = 'mongodb+srv://swaroop-chikkam:630swaroop@pvn.vdv88pa.mongodb.net/studentDataDB?retryWrites=true&w=majority'
 
 mongoose
   .connect(uri, {
@@ -49,78 +61,111 @@ mongoose
     console.error("MongoDB connection error:", error);
   });
 
-
 const db = mongoose.connection;
 
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
-
-const excelFilePath = `${__dirname}/student-details/school-data.xlsx`;
-const upload = multer({ dest: `${__dirname}/multer` });
-
-app.get("/admin", function (req, res) {
-  res.render('admin', {message: "" });
+db.once("open", () => {
+  console.log("Connected to MongoDB");
 });
 
-app.post("/admin", upload.single("file"), async function (req, res) {
+const excelFilePath = `${__dirname}/student-details/school-data.xlsx`;
+
+app.get("/admin", function (req, res) {
+  res.render("admin", { message: "" });
+});
+
+app.post("/admin", upload.fields([
+  { name: 'file', maxCount: 1 },
+  { name: 'fileFA1', maxCount: 1 },
+  { name: 'fileFA2', maxCount: 1 },
+  { name: 'fileFA3', maxCount: 1 },
+  { name: 'fileFA4', maxCount: 1 },
+  { name: 'fileSA1', maxCount: 1 },
+  { name: 'fileSA2', maxCount: 1 }
+]), async function (req, res) {
   const username = req.body.username.trim();
   const password = req.body.password.trim();
 
   if (username === "PVN@admin" && password === "PVN@website") {
-    populateDatabaseFromExcel(excelFilePath);
     req.session.adminAuthenticated = true;
-    if (req.file) {
-      const newFilePath = "student-details/" + req.file.originalname;
-      const previousFilePath = getLatestFilePath("student-details/");
 
-      if (previousFilePath) {
-        fs.unlinkSync(previousFilePath);
+    if (req.files) {
+      const examFiles = [
+        { fieldName: 'fileFA1', examName: 'FA-1' },
+        { fieldName: 'fileFA2', examName: 'FA-2' },
+        { fieldName: 'fileFA3', examName: 'FA-3' },
+        { fieldName: 'fileFA4', examName: 'FA-4' },
+        { fieldName: 'fileSA1', examName: 'SA-1' },
+        { fieldName: 'fileSA2', examName: 'SA-2' }
+      ];
+
+      for (const examFile of examFiles) {
+        const fieldName = examFile.fieldName;
+        const examName = examFile.examName;
+        const files = req.files[fieldName];
+
+        if (files && files.length > 0) {
+          const file = files[0];
+          const newFilePath = path.join(__dirname, "student-marks-sheet", `${examName}.xlsx`);
+          const previousFilePath = getLatestFilePath("student-marks-sheet/");
+
+          if (previousFilePath) {
+            fs.unlinkSync(previousFilePath);
+          }
+
+          fs.renameSync(file.path, newFilePath);
+
+          try {
+            await populateMarksFromExcel(newFilePath, examName);
+            console.log(`Marks population for ${examName} completed successfully.`);
+          } catch (error) {
+            console.error(`Error updating marks for ${examName}:`, error);
+          }
+        } else {
+          console.log(`No file uploaded for ${examName}`);
+        }
       }
 
-      fs.renameSync(req.file.path, newFilePath);
-      res.render("admin", { message: "File uploaded successfully" });
+      const schoolDataFiles = req.files['file'];
+      if (schoolDataFiles && schoolDataFiles.length > 0) {
+        const schoolDataFile = schoolDataFiles[0];
+        const newFilePath = path.join(__dirname, "student-details", schoolDataFile.originalname);
+        const previousFilePath = getLatestFilePath("student-details/");
 
-      try {
-        await populateDatabaseFromExcel(newFilePath);
-        console.log("Database updated successfully.");
-      } catch (error) {
-        console.error("Error updating database:", error);
+        if (previousFilePath) {
+          fs.unlinkSync(previousFilePath);
+        }
+
+        fs.renameSync(schoolDataFile.path, newFilePath);
+
+        try {
+          await populateDatabaseFromExcel(newFilePath);
+          console.log("Database updated successfully.");
+        } catch (error) {
+          console.error("Error updating database:", error);
+        }
+      } else {
+        console.log("No school data file uploaded");
       }
+
+      res.render("admin", { message: "Files uploaded successfully" });
     } else {
       res.render("admin", { message: "No file uploaded" });
     }
   } else {
-    if (req.file) {
-      fs.unlinkSync(req.file.path);
-    }
     res.render("admin", { message: "Invalid username or password" });
   }
 });
 
 
 
-// Example usage:
-const fa1excelsheet = `${__dirname}/student-marks-sheet/results-website.xlsx`;
-const fa1 = 'FA-1';
-(async () => {
-  try {
-    await populateMarksFromExcel(fa1excelsheet, fa1);
-    // Rest of your code...
-  } catch (error) {
-    // Handle the error
-  }
-})();
-
-
-// const exam2FilePath = 'path/to/exam2.xlsx';
-// const exam2Name = 'FA-2';
-// await populateMarksFromExcel(exam2FilePath, exam2Name);
-
-
+app.use((error, req, res, next) => {
+  console.log('This is the rejected field ->', error.field);
+});
 
 app.post("/student-login", async (req, res) => {
   const aadharNumber = req.body.aadhar.replace(/\s/g, "");
   const password = req.body.password;
-  populateDatabaseFromExcel(excelFilePath);
 
   try {
     const student = await Student.findOne({ "Aadhar Number": aadharNumber });
@@ -164,7 +209,6 @@ app.post("/student-login", async (req, res) => {
   }
 });
 
-
 app.get("/", function (req, res) {
   res.render("index"); 
 });
@@ -203,52 +247,38 @@ app.post("/admission", function(req, res){
       });
 });
 
-cron.schedule("0 * * * *", renewAccessToken);
 
 const appId = "1668647766970031";
 const appSecret = "1feef404e27715163eb2da055d931b88";
+let oldAccessToken = "EAAXtoFVnzq8BAI20Hi6TSrhVC2QDGQQup045N4UxQgq7b1qAJErIfftCTRbcNWTZCSC6Ltr8wU1ZAnRHV83mKwJFfcNMyk7ZCtRFl6VpYkboO4xkRNQBghB0xIexpaNk4ETx88aq4Mqa0ZAZCpQxAQtQZCm5oQrrZCCeQ70GgXo41yif8xM6gxL8oUAqNaqdGOBkiClZBxW5EKsxSLNhCql8";
 
-async function renewAccessToken(token) {
-  const url = `https://graph.facebook.com/v13.0/oauth/access_token`;
-  const params = {
-    grant_type: "fb_exchange_token",
-    client_id: appId,
-    client_secret: appSecret,
-    fb_exchange_token: token,
-  };
-
-  try {
-    const response = await axios.get(url, { params });
-    const { data } = response;
-    return data.access_token;
-  } catch (error) {
-    console.error("Error renewing access token:", error);
-    throw error;
-  }
-}
-
-
-
-app.get("/gallery", async function (req, res) {
-  try {
-    var initialAccessToken =
-      "EAAXtoFVnzq8BAHrNJBXOxMC92ANfPcp0MZC5evrW2KCXZC0mYL1KK98QfKtTXDA2aGj7IV3w7l8zdNZBFIHORZADh45dWWZBRK4x5NIZCMgrtGcZAFrpjHVX551OCcCtswIYZBZCZCLIg3CHyJlzdfsWrX1UMK96XFsBZCaaZBNanlxxMzIuZCIctG99qH3bJKsOB9EsqwxCjdp5d4aUqws16BQI2";
-
-    initialAccessToken = await renewAccessToken(initialAccessToken);
-
-    const facebook_url_endpoint =
-      "https://graph.facebook.com/me/accounts/?fields=albums{id,name,photos{id,name,images}}&access_token=" +
-      initialAccessToken;
-
-    const response = await axios.get(facebook_url_endpoint);
-    const facebookData = response.data;
-    const albums = facebookData.data[0].albums.data;
-    res.render("gallery", { albums: albums });
-  } catch (error) {
-    console.error("Error fetching Facebook data:", error);
-    res.status(500).send("Error fetching Facebook data");
-  }
+app.get("/fb-token", function (req, res) {
+  fetchNewAccessToken(appId, appSecret, oldAccessToken, function (newAccessToken) {
+    oldAccessToken = newAccessToken;
+    res.send("Access token renewed successfully!");
+  });
+  renewAccessToken();
+  res.send("Access token renewed successfully!");
 });
+
+app.get("/gallery", function (req, res) {
+  const facebook_url_endpoint =
+    "https://graph.facebook.com/me/accounts/?fields=albums{id,name,photos{id,name,images}}&access_token=" +
+    oldAccessToken;
+
+  https.get(facebook_url_endpoint, function (response) {
+    let chunks = "";
+    response.on("data", function (chunk) {
+      chunks += chunk;
+    });
+    response.on("end", function () {
+      const facebookData = JSON.parse(chunks);
+      const albums = facebookData.data[0].albums.data;
+      res.render("gallery", { albums: albums });
+    });
+  });
+});
+
 
 
 app.get("/fee", function (req, res) {
@@ -344,3 +374,5 @@ app.delete("/circulars/:id", async (req, res) => {
 app.listen(PORT, function () {
   console.log(`Server started at port ${PORT}.`);
 });
+
+
