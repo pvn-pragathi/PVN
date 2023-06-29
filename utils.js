@@ -9,7 +9,6 @@ var accessToken =
 
 async function populateDatabaseFromExcel(filePath) {
   try {
-
     const workbook = xlsx.readFile(filePath);
     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
     const jsonData = xlsx.utils.sheet_to_json(worksheet);
@@ -39,14 +38,22 @@ async function populateMarksFromExcel(filePath, examName) {
         const admissionNumber = row[0];
 
         if (!admissionNumber) {
-          console.log('Invalid admission number in row:', marksData.indexOf(row) + 2);
+          console.log(
+            "Invalid admission number in row:",
+            marksData.indexOf(row) + 2
+          );
           continue;
         }
 
-        const student = await Student.findOne({ 'Admission Number': admissionNumber });
+        const student = await Student.findOne({
+          "Admission Number": admissionNumber,
+        });
 
         if (!student) {
-          console.log('No student found with admission number:', admissionNumber);
+          console.log(
+            "No student found with admission number:",
+            admissionNumber
+          );
           continue;
         }
 
@@ -55,32 +62,38 @@ async function populateMarksFromExcel(filePath, examName) {
           const subject = headers[i];
           const marks = row[i];
 
-          if (subject !== 'Roll Number' && subject !== 'NAME OF THE STUDENT') {
+          if (subject !== "Roll Number" && subject !== "NAME OF THE STUDENT") {
             examMarks[subject] = marks;
           }
         }
 
-        const examIndex = student['Exam Result'].findIndex((exam) => exam.name === examName);
+        const examIndex = student["Exam Result"].findIndex(
+          (exam) => exam.name === examName
+        );
 
         if (examIndex === -1) {
-          student['Exam Result'].push({ name: examName, marks: examMarks });
+          student["Exam Result"].push({ name: examName, marks: examMarks });
         } else {
-          student['Exam Result'][examIndex].marks = examMarks;
+          student["Exam Result"][examIndex].marks = examMarks;
         }
 
         await student.save();
-        console.log('Marks updated for student with admission number:', admissionNumber);
+        console.log(
+          "Marks updated for student with admission number:",
+          admissionNumber
+        );
       }
 
-      console.log(`Marks population from Sheet "${sheetName}" completed successfully.`);
+      console.log(
+        `Marks population from Sheet "${sheetName}" completed successfully.`
+      );
     }
 
-    console.log('Marks population from all sheets completed successfully.');
+    console.log("Marks population from all sheets completed successfully.");
   } catch (error) {
     throw error;
   }
 }
-
 
 function getLatestFilePath(directoryPath) {
   const files = fs.readdirSync(directoryPath);
@@ -118,10 +131,96 @@ function sendEmail(content) {
   return transporter.sendMail(mailOptions);
 }
 
+function calculateGrade(marks) {
+  if (marks >= 91 / 5) {
+    return "A1";
+  } else if (marks >= 81 / 5) {
+    return "A2";
+  } else if (marks >= 71 / 5) {
+    return "B1";
+  } else if (marks >= 61 / 5) {
+    return "B2";
+  } else if (marks >= 51 / 5) {
+    return "C1";
+  } else if (marks >= 41 / 5) {
+    return "C2";
+  } else if (marks >= 35 / 5) {
+    return "D";
+  } else if (marks >= 2) {
+    return "E";
+  } else if (marks >= 0) {
+    return "AB";
+  }
+}
+
+
+function calculatePoints(grade) {
+  if (grade === "A1") {
+    return 10;
+  } else if (grade === "A2") {
+    return 9;
+  } else if (grade === "B1") {
+    return 8;
+  } else if (grade === "B2") {
+    return 7;
+  } else if (grade === "C1") {
+    return 6;
+  } else if (grade === "C2") {
+    return 5;
+  } else if (grade === "D") {
+    return 4;
+  } else if (grade === "E") {
+    return 3;
+  } else if (grade === "AB") {
+    return 0;
+  }
+}
+
+
+function calculateOverallGrade(percentage) {
+  if (percentage >= 91) {
+    return "A1";
+  } else if (percentage >= 81) {
+    return "A2";
+  } else if (percentage >= 71) {
+    return "B1";
+  } else if (percentage >= 61) {
+    return "B2";
+  } else if (percentage >= 51) {
+    return "C1";
+  } else if (percentage >= 41) {
+    return "C2";
+  } else if (percentage >= 35) {
+    return "D";
+  } else if (percentage >= 2) {
+    return "E";
+  } else if (percentage >= 0) {
+    return "AB";
+  }
+}
+
+
+function calculateGPA(pointsArray) {
+  if (pointsArray.length === 0) {
+    return 0;
+  }
+
+  const sumPoints = pointsArray.reduce((total, points) => total + points, 0);
+  const averagePoints = sumPoints / pointsArray.length;
+  const gpa = Math.round(averagePoints * 10) / 10; // Round to 1 decimal place
+
+  return gpa;
+}
+
+
 
 module.exports = {
   populateDatabaseFromExcel,
   populateMarksFromExcel,
   getLatestFilePath,
   sendEmail,
+  calculateGrade,
+  calculatePoints,
+  calculateOverallGrade,
+  calculateGPA,
 };

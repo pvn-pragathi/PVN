@@ -1,9 +1,34 @@
 <%- include('header') -%>
 
-<div class="container mt-5 mb-5">
-  <h1 class="h2 mb-5">Student Details</h1>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+  table{
+    width: 60vw !important;
+    margin: auto;
+  }
+
+  /* Add this style to your CSS file */
+  table.black-bordered td,
+  table.black-bordered th {
+    border: 1px solid black;
+  }
+
+  table.black-bordered th {
+    text-align: center;
+  }
+
+  .student-details{
+    width: 80vw;
+    margin: auto;
+  }
+</style>
+
+<div class="student-details mt-5 mb-5">
+  <h1 class="h1 mb-5">Student Details</h1>
   <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-12">
       <ul class="list-group">
         <% for (const key in studentDetails) { %>
           <li class="list-group-item">
@@ -11,98 +36,54 @@
             <% if (key === 'Exam Result') { %>
               <% const examResult = studentDetails[key]; %>
               <% if (Array.isArray(examResult) && examResult.length > 0) { %>
-                <ul>
-                  <% examResult.forEach((exam) => { %>
-                    <li class="mb-5 mt-5">
-                      <strong><%= exam.name %>:</strong>
+                <% examResult.forEach((exam) => { %>
+                  <h2 class="h1 mb-3 mt-5"><%= exam.name %></h2>
+                  <table class="table table-bordered black-bordered">
+                    <thead>
+                      <tr>
+                        <th>Subject</th>
+                        <th>Marks</th>
+                        <th>Grade</th>
+                        <th>Point</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% const subjectPoints = []; %>
+                      <% let totalMarks = 0; %>
                       <% const marks = exam.marks; %>
-                      <ul>
-                        <% let totalMarks = 0; %>
-                        <% for (const subject in marks) { %>
-                          <% if (subject !== '_id') { %>
-                            <% const subjectMarks = marks[subject]; %>
-                            <% totalMarks += subjectMarks; %>
-                            <li>
-                              <%= subject %>: <%= subjectMarks %>/<%= (exam.name.startsWith('FA')) ? '20' : '80' %>
-                            </li>
-                          <% } %>
+                      <% for (const subject in marks) { %>
+                        <% if (subject !== '_id') { %>
+                          <% const subjectMarks = marks[subject]; %>
+                          <% const grade = calculateGrade(subjectMarks); %>
+                          <% const point = calculatePoints(grade); %>
+                          <% const marksObtained = parseInt(subjectMarks, 10); %>
+                          <tr>
+                            <td><em><%= subject %></em></td>
+                            <td><%= marksObtained %></td>
+                            <td><%= grade %></td>
+                            <td><%= point %></td>
+                          </tr>
+                          <% subjectPoints.push(point); %>
+                          <% totalMarks += marksObtained; %>
                         <% } %>
-                        <li><strong>Total Marks:</strong> <%= totalMarks %>/<%= (exam.name.startsWith('FA')) ? '120' : '480' %></li>
-                        <li>
-                          <strong>Percentage:</strong>
-                          <% if (exam.name.startsWith('FA')) { %>
-                            <%= ((totalMarks / 120) * 100).toFixed(2) %>
-                          <% } else if (exam.name.startsWith('SA')) { %>
-                            <%= ((totalMarks / 480) * 100).toFixed(2) %>
-                          <% } %>
-                        </li>
-                        <% let grade = ''; %>
-                        <% let gpa = 0; %>
-                        <% if (exam.name.startsWith('FA')) { %>
-                          <% if (totalMarks >= 91) { %>
-                            <% grade = 'A1'; %>
-                            <% gpa = 10; %>
-                          <% } else if (totalMarks >= 81) { %>
-                            <% grade = 'A2'; %>
-                            <% gpa = 9; %>
-                          <% } else if (totalMarks >= 71) { %>
-                            <% grade = 'B1'; %>
-                            <% gpa = 8; %>
-                          <% } else if (totalMarks >= 61) { %>
-                            <% grade = 'B2'; %>
-                            <% gpa = 7; %>
-                          <% } else if (totalMarks >= 51) { %>
-                            <% grade = 'C1'; %>
-                            <% gpa = 6; %>
-                          <% } else if (totalMarks >= 41) { %>
-                            <% grade = 'C2'; %>
-                            <% gpa = 5; %>
-                          <% } else if (totalMarks >= 35) { %>
-                            <% grade = 'D'; %>
-                            <% gpa = 4; %>
-                          <% } else if (totalMarks >= 2) { %>
-                            <% grade = 'E'; %>
-                            <% gpa = 2; %>
-                          <% } else if (totalMarks >= 0) { %>
-                            <% grade = 'AB'; %>
-                            <% gpa = 0; %>
-                          <% } %>
-                        <% } else if (exam.name.startsWith('SA')) { %>
-                          <% if (totalMarks >= 91) { %>
-                            <% grade = 'A1'; %>
-                            <% gpa = 10; %>
-                          <% } else if (totalMarks >= 81) { %>
-                            <% grade = 'A2'; %>
-                            <% gpa = 9; %>
-                          <% } else if (totalMarks >= 71) { %>
-                            <% grade = 'B1'; %>
-                            <% gpa = 8; %>
-                          <% } else if (totalMarks >= 61) { %>
-                            <% grade = 'B2'; %>
-                            <% gpa = 7; %>
-                          <% } else if (totalMarks >= 51) { %>
-                            <% grade = 'C1'; %>
-                            <% gpa = 6; %>
-                          <% } else if (totalMarks >= 41) { %>
-                            <% grade = 'C2'; %>
-                            <% gpa = 5; %>
-                          <% } else if (totalMarks >= 35) { %>
-                            <% grade = 'D'; %>
-                            <% gpa = 4; %>
-                          <% } else if (totalMarks >= 2) { %>
-                            <% grade = 'E'; %>
-                            <% gpa = 2; %>
-                          <% } else if (totalMarks >= 0) { %>
-                            <% grade = 'AB'; %>
-                            <% gpa = 0; %>
-                          <% } %>
-                        <% } %>
-                        <li><strong>Grade:</strong> <%= grade %></li>
-                        <li><strong>GPA:</strong> <%= gpa %>/10</li>
-                      </ul>
-                    </li>
-                  <% }); %>
-                </ul>
+                      <% } %>
+                      <tr>
+                        <td><strong>Total</strong></td>
+                        <% const percentage = ((totalMarks / 120 * 100) || 0).toFixed(2); %>
+                        <td><strong><%= totalMarks %></strong></td>
+                        <td><strong><%= calculateOverallGrade(percentage) %></strong></td>
+                        <td><strong>
+                          <% const gpa = calculateGPA(subjectPoints); %>
+                          <%= gpa.toFixed(1) %>
+                        </strong></td>
+                      </tr>
+                      <tr>
+                        <td><strong>Percentage</strong></td>
+                        <td colspan="3"><strong><%= percentage %>%</strong></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                <% }); %>
               <% } else { %>
                 No exam results available.
               <% } %>
@@ -113,47 +94,7 @@
         <% } %>
       </ul>
     </div>
-    <div class="col-md-6">
-      <canvas id="marksChart"></canvas>
-    </div>
-    
   </div>
 </div>
 
 <%- include('footer') -%>
-<script
-src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
-</script>
-<script>
-  // Retrieve the marks data from the studentDetails object
-  const examResult = studentDetails['Exam Result'];
-  const marksData = examResult.map(exam => {
-    const marks = Object.values(exam.marks).filter(value => typeof value === 'number');
-    const totalMarks = marks.reduce((total, mark) => total + mark, 0);
-    return totalMarks;
-  });
-
-  // Create the chart using Chart.js
-  const ctx = document.getElementById('marksChart').getContext('2d');
-  const marksChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: examResult.map(exam => exam.name),
-      datasets: [{
-        label: 'Total Marks',
-        data: marksData,
-        backgroundColor: 'rgba(75, 192, 192, 0.6)',
-      }]
-    },
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true
-        }
-      }
-    }
-  });
-</script>
-
-
-

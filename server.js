@@ -10,7 +10,7 @@ const http = require('http');
 const socketIO = require('socket.io');
 const Student = require("./models/student");
 const Circular = require("./models/circular");
-const { populateDatabaseFromExcel, getLatestFilePath , sendEmail, populateMarksFromExcel} = require("./utils");
+const { populateDatabaseFromExcel, getLatestFilePath , sendEmail, populateMarksFromExcel, calculateGrade, calculatePoints, calculateOverallGrade, calculateGPA} = require("./utils");
 const PORT = process.env.PORT || 3030;
 const cron = require("node-cron");
 const path = require("path");
@@ -198,7 +198,7 @@ app.post("/student-login", async (req, res) => {
     };
     req.session.studentId = student._id; // Store the student ID in the session
     res.set("Cache-Control", "no-store");
-    return res.render("student-details", { studentDetails, marks: true });
+    return res.render("student-details", { studentDetails, marks: true , calculateGrade, calculatePoints, calculateOverallGrade, calculateGPA});
 
     // Rest of the code...
   } catch (error) {
