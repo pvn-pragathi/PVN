@@ -1,26 +1,20 @@
 <%- include('header') -%>
 
-<div class="container">
-  <% if (albums) { %>
-    <% albums.forEach(album => { %>
-      <% if (album.name !== "Profile pictures" && album.photos && album.photos.data) { %>
-        <div class="album-section">
-          <h2 class="mt-5 mb-5"><%= album.name %></h2>
-          <div class="image-gallery">
-            <% album.photos.data.forEach(photo => { %>
-              <div class="gallery-image-total ms-3 me-3">
-                <img src="<%= photo.images[0].source %>" alt="gallery-image" class="gallery-image">
-                <p class="image-text"><%= photo.name %></p>
-              </div>
-            <% }); %>
-          </div>
-        </div>
-      <% } %>
+<h1 class="h1">Gallery</h1>
+
+<div class="gallery container">
+  <div class="album-section">
+    <% folders.forEach(function(folder) { %>
+      <h2 class="h1"><%= folder %></h2>
+      <div class="image-gallery">
+        <% photos[folder].forEach(function(photo) { %>
+          <img src="/images/gallery/<%= folder %>/<%= photo %>" alt="<%= photo %>" class="gallery-image-total ms-3 me-3 mt-3 mb-5">
+        <% }); %>
+      </div>
     <% }); %>
-  <% } else { %>
-    <p><%= message %></p>
-  <% } %>
+  </div>
 </div>
 
 
-<%- include('footer') -%>   
+
+<%- include('footer') -%>  

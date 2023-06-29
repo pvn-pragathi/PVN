@@ -261,23 +261,38 @@ app.get("/fb-token", function (req, res) {
   res.send("Access token renewed successfully!");
 });
 
-// app.get("/gallery", function (req, res) {
-//   const facebook_url_endpoint =
-//     "https://graph.facebook.com/me/accounts/?fields=albums{id,name,photos{id,name,images}}&access_token=" +
-//     oldAccessToken;
+app.get('/gallery', (req, res) => {
+  const galleryPath = path.join(__dirname, 'public', 'images', 'gallery');
 
-//   https.get(facebook_url_endpoint, function (response) {
-//     let chunks = "";
-//     response.on("data", function (chunk) {
-//       chunks += chunk;
-//     });
-//     response.on("end", function () {
-//       const facebookData = JSON.parse(chunks);
-//       const albums = facebookData.data[0].albums.data;
-//       res.render("gallery", { albums: albums });
-//     });
-//   });
-// });
+  fs.readdir(galleryPath, (err, folders) => {
+    if (err) {
+      console.error('Error reading gallery folders:', err);
+      res.render('gallery', { folders: [], photos: {} });
+      return;
+    }
+
+    const photos = {};
+
+    folders.forEach((folder) => {
+      const folderPath = path.join(galleryPath, folder);
+
+      fs.readdir(folderPath, (err, files) => {
+        if (err) {
+          console.error(`Error reading files in folder ${folder}:`, err);
+          photos[folder] = [];
+        } else {
+          photos[folder] = files;
+        }
+
+        if (Object.keys(photos).length === folders.length) {
+          // All folders have been processed, render the template
+          res.render('gallery', { folders, photos });
+        }
+      });
+    });
+  });
+});
+
 
 
 
@@ -292,20 +307,21 @@ app.get("/ssc-results", function (req, res) {
 app.get("/rules", function (req, res) {
   res.render("rules");
 });
-
+ 
 app.get("/student-login", (req, res) => {
   res.render("student-login", { message: "" });
 });
 
 app.get("/circulars", async (req, res) => {
   try {
-    const circulars = await Circular.find();
+    const circulars = await Circular.find().sort({ date: -1 });
     res.render("circulars", { circulars, message: "", teacherLoggedIn: req.session.teacher });
   } catch (error) {
     console.error("Error retrieving circulars:", error);
     res.render("circulars", { circulars: [], message: "Error retrieving circulars", teacherLoggedIn: req.session.teacher });
   }
 });
+
 
 
 app.get("/teacher-login", (req, res) => {
