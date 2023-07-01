@@ -51,7 +51,7 @@ nav,
 
 .carousel-item .carousel-image {
   float: right;
-  margin-right: 10vw;
+  margin-right: 8vw;
   width: 40%;
   height: 70vh;
   margin-top: 8vh;
@@ -60,7 +60,7 @@ nav,
 .carousel-item span {
   float: left;
   width: 35%;
-  margin-left: 10vw;
+  margin-left: 8vw;
   padding-top: 10vh;
   height: 85vh;
   color: #5c5c5c;
