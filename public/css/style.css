@@ -4,7 +4,7 @@
 
 body p {
   font-family: "Work Sans", sans-serif;
-  font-size: 2.5vh;
+  font-size: 1vw;
 }
 
 .h1 {
@@ -59,7 +59,7 @@ nav,
 
 .carousel-item span {
   float: left;
-  width: 35%;
+  width: 38vw;
   margin-left: 8vw;
   padding-top: 10vh;
   height: 85vh;
@@ -67,7 +67,7 @@ nav,
 }
 
 .carousel-item span h1 {
-  font-size: 6vh;
+  font-size: 3.2vw;
   font-weight: 700;
   font-family: ui-sans-serif, system-ui, -apple-system;
   margin-top: 5vh;
@@ -76,7 +76,7 @@ nav,
 }
 
 .carousel-item span h3 {
-  font-size: 4vh;
+  font-size: 2.5vw;
   font-weight: 500;
   font-family: ui-sans-serif, system-ui, -apple-system !important;
 }
@@ -84,12 +84,12 @@ nav,
 .carousel-item span p {
   margin-top: 6vh;
   margin-bottom: 8vh;
-  line-height: 30px;
-  font-size: 2.4vh;
+  line-height: 2;
+  font-size: 1.3vw;
 }
 
 .carousel-item span h5 {
-  font-size: 3vh;
+  font-size: 1.5vw;
 }
 
 img[alt="boquet"] {
@@ -99,7 +99,7 @@ img[alt="boquet"] {
 
 .congrats-text {
   font-family: "Great Vibes", cursive;
-  font-size: 4vh;
+  font-size: 2vw;
   margin-bottom: 6vh;
   margin-top: 4vh;
 }
@@ -116,15 +116,11 @@ img[alt="boquet"] {
 
 .sports-acheivements {
   margin: 1.3vh !important;
-  font-size: 2.2vh;
+  font-size: 1.2vw;
 }
 
 #iit {
   width: 35vw;
-}
-
-.click {
-  margin-top: 10vh;
 }
 
 #gs {
@@ -146,11 +142,13 @@ img[alt="boquet"] {
   float: right;
   margin-left: 30px;
 }
+
 .feature-image-3 {
   float: left;
   margin-right: 30px;
   width: 30vw;
 }
+
 .features-section div {
   width: 70%;
   height: max-content;
@@ -307,26 +305,26 @@ td {
   padding: 1vw;
 }
 
-.album-section h2{
-    text-align: center !important;
+.album-section h2 {
+  text-align: center !important;
 }
 
-.image-gallery{
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    justify-content: center;
-    min-width: 85vw;
+.image-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: center;
+  min-width: 85vw;
 }
 
-.gallery-image{
-    width: 18rem;
+.gallery-image {
+  width: 18rem;
 }
 
-.image-text{
-    font-size: 1.3rem;
-    text-align: center;
-    width: 18rem;
+.image-text {
+  font-size: 1.3rem;
+  text-align: center;
+  width: 18rem;
 }
 
 .circular {
@@ -366,29 +364,46 @@ td {
   }
 
   .carousel-item span {
+    padding: unset;
+    font-size: unset;
+    float: none;
     display: block;
-    text-align: left;
-    margin: auto;
-    margin-left: 15vw;
-    width: 70vw;
-    margin-top: -10vh;
+    width: 80vw;
+    height: max-content;
+    margin: 10vh auto;
   }
 
   .carousel-item span h1,
-  #iit {
+  #iit,
+  #gs {
+    font-size: 35px !important;
     width: 80vw !important;
   }
 
-  #gs {
-    width: 80vw !important;
+  .carousel-item span h3,
+  .carousel-item span h5{
+    font-size: 30px;
+  }
+
+  .carousel-item span p{
+    font-size: 20px;
+  }
+
+  .sports-acheivements{
+    font-size: 15px;
+  }
+
+  .congrats-text{
+    font-size: 20px;
   }
 
   .carousel-item .carousel-image {
     display: block;
     float: none;
-    width: 60vw !important;
-    height: 50vh;
-    margin: auto;
+    width: 80vw !important;
+    height: 50vh !important;
+    margin: auto !important;
+    margin-bottom: 30px !important;
   }
 
   .carousel-item span button {
@@ -463,10 +478,6 @@ td {
     line-height: 1.5;
   }
 
-  .carousel-item span {
-    height: max-content;
-  }
-
   .admission-form {
     width: 90vw !important;
   }
@@ -484,11 +495,11 @@ td {
     padding: 2vw !important;
   }
 
-  .map-frame{
+  .map-frame {
     width: 90vw;
     margin: auto;
   }
-  
+
 }
 
 
