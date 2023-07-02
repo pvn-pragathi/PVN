@@ -1,20 +1,26 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const session = require("express-session");
-const https = require("https");
 const multer = require("multer");
 const fs = require("fs");
 const mongoose = require("mongoose");
 const methodOverride = require("method-override");
-const http = require('http');
-const socketIO = require('socket.io');
-const Student = require("./models/student");
+const http = require("http");
+const socketIO = require("socket.io");
+const { Student, DayStudent } = require("./models/student");
 const Circular = require("./models/circular");
-const { populateDatabaseFromExcel, getLatestFilePath , sendEmail, populateMarksFromExcel, calculateGrade, calculatePoints, calculateOverallGrade, calculateGPA} = require("./utils");
+const {
+  populateDatabaseFromExcel,
+  getLatestFilePath,
+  sendEmail,
+  populateMarksFromExcel,
+  calculateGrade,
+  calculatePoints,
+  calculateOverallGrade,
+  calculateGPA,
+} = require("./utils");
 const PORT = process.env.PORT || 5000;
-const cron = require("node-cron");
 const path = require("path");
-const axios = require("axios");
 
 const app = express();
 const server = http.createServer(app);
@@ -33,21 +39,20 @@ app.use(
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     // Specify the destination folder where uploaded files will be stored
-    cb(null, 'uploads/');
+    cb(null, "uploads/");
   },
   filename: function (req, file, cb) {
     // Specify a custom filename for the uploaded file
     cb(null, file.originalname);
-  }
+  },
 });
 
 const upload = multer({ storage: storage });
 
-
-
 app.use(methodOverride("_method"));
 
-const uri = 'mongodb+srv://swaroop-chikkam:630swaroop@pvn.vdv88pa.mongodb.net/studentDataDB?retryWrites=true&w=majority'
+const uri =
+  "mongodb+srv://swaroop-chikkam:630swaroop@pvn.vdv88pa.mongodb.net/studentDataDB?retryWrites=true&w=majority";
 
 mongoose
   .connect(uri, {
@@ -68,10 +73,8 @@ db.once("open", () => {
   console.log("Connected to MongoDB");
 });
 
-const excelFilePath = `${__dirname}/student-details/school-data.xlsx`;
-
-app.get("/admin", function (req, res) {
-  res.render("admin", { message: "" });
+app.get("/admin", function(req, res){
+  res.render("admin", {message: ""});
 });
 
 app.post("/admin", upload.fields([
@@ -81,7 +84,8 @@ app.post("/admin", upload.fields([
   { name: 'fileFA3', maxCount: 1 },
   { name: 'fileFA4', maxCount: 1 },
   { name: 'fileSA1', maxCount: 1 },
-  { name: 'fileSA2', maxCount: 1 }
+  { name: 'fileSA2', maxCount: 1 },
+  { name: 'daySchoolFiles', maxCount: 25 }
 ]), async function (req, res) {
   const username = req.body.username.trim();
   const password = req.body.password.trim();
@@ -111,9 +115,11 @@ app.post("/admin", upload.fields([
 
           if (previousFilePath) {
             fs.unlinkSync(previousFilePath);
+            console.log(`Previous file ${previousFilePath} removed.`);
           }
 
           fs.renameSync(file.path, newFilePath);
+          console.log(`File ${file.path} moved to ${newFilePath}.`);
 
           try {
             await populateMarksFromExcel(newFilePath, examName);
@@ -127,6 +133,7 @@ app.post("/admin", upload.fields([
       }
 
       const schoolDataFiles = req.files['file'];
+
       if (schoolDataFiles && schoolDataFiles.length > 0) {
         const schoolDataFile = schoolDataFiles[0];
         const newFilePath = path.join(__dirname, "student-details", schoolDataFile.originalname);
@@ -134,41 +141,61 @@ app.post("/admin", upload.fields([
 
         if (previousFilePath) {
           fs.unlinkSync(previousFilePath);
+          console.log(`Previous file ${previousFilePath} removed.`);
         }
 
         fs.renameSync(schoolDataFile.path, newFilePath);
+        console.log(`File ${schoolDataFile.path} moved to ${newFilePath}.`);
 
         try {
-          await populateDatabaseFromExcel(newFilePath);
-          console.log("Database updated successfully.");
+          await populateDatabaseFromExcel(newFilePath, false, Student, DayStudent);
+          console.log("School database updated successfully.");
         } catch (error) {
-          console.error("Error updating database:", error);
+          console.error("Error updating school database:", error);
         }
       } else {
         console.log("No school data file uploaded");
       }
 
-      res.render("admin", { message: "Files uploaded successfully" });
+      const daySchoolDataFiles = req.files['daySchoolFiles'];
+
+      if (daySchoolDataFiles && daySchoolDataFiles.length > 0) {
+        for (const daySchoolDataFile of daySchoolDataFiles) {
+          const newFilePath = path.join(__dirname, "day-student-details", daySchoolDataFile.originalname);
+          const previousFilePath = getLatestFilePath("day-student-details/");
+
+          fs.renameSync(daySchoolDataFile.path, newFilePath);
+          console.log(`File ${daySchoolDataFile.path} moved to ${newFilePath}.`);
+
+          try {
+            await populateDatabaseFromExcel(newFilePath, true, Student, DayStudent);
+            console.log("Day school database updated successfully.");
+          } catch (error) {
+            console.error("Error updating day school database:", error);
+          }
+        }
+      } else {
+        console.log("No day school data files uploaded");
+      }
     } else {
-      res.render("admin", { message: "No file uploaded" });
+      console.log("No files uploaded");
     }
+
+    res.redirect("/admin");
   } else {
-    res.render("admin", { message: "Invalid username or password" });
+    res.redirect("/admin?error=Authentication failed");
   }
-});
-
-
-
-app.use((error, req, res, next) => {
-  console.log('This is the rejected field ->', error.field);
 });
 
 app.post("/student-login", async (req, res) => {
   const aadharNumber = req.body.aadhar.replace(/\s/g, "");
   const password = req.body.password;
-
   try {
-    const student = await Student.findOne({ "Aadhar Number": aadharNumber });
+    var student = await Student.findOne({ "AADHAR NO": aadharNumber });
+    
+    if (!student) {
+      var student = await DayStudent.findOne({ "AADHAR": aadharNumber});
+    }
 
     if (!student) {
       console.log(
@@ -180,26 +207,23 @@ app.post("/student-login", async (req, res) => {
       });
     }
 
-    const admissionNumber = student["Admission Number"].toString();
-    const expectedPassword = `PVN@${admissionNumber}`;
+    var admissionNumber = student["ADMN"].toString();
 
+    const expectedPassword = `PVN@${admissionNumber}`;
     if (password !== expectedPassword) {
       console.log("Invalid password");
       return res.render("student-login", { message: "Invalid password" });
     }
-
     const studentDetails = student.toObject();
     delete studentDetails._id;
     delete studentDetails.__v;
     delete studentDetails.SNO;
-
     req.session.student = {
       class: studentDetails.Class,
     };
     req.session.studentId = student._id; // Store the student ID in the session
     res.set("Cache-Control", "no-store");
     return res.render("student-details", { studentDetails, marks: true , calculateGrade, calculatePoints, calculateOverallGrade, calculateGPA});
-
     // Rest of the code...
   } catch (error) {
     console.error("Error retrieving student details from the database:", error);
@@ -210,7 +234,7 @@ app.post("/student-login", async (req, res) => {
 });
 
 app.get("/", function (req, res) {
-  res.render("index"); 
+  res.render("index");
 });
 
 app.get("/about", function (req, res) {
@@ -229,45 +253,50 @@ app.get("/admission", function (req, res) {
   res.render("admission", { submitted, error });
 });
 
-app.post("/admission", function(req, res){
+app.post("/admission", function (req, res) {
   const formData = req.body;
   const formattedData = `Name: ${formData.studentname}\nMother Name: ${formData.mothername}\nFather Name: ${formData.fathername}\nStudent age: ${formData.age}\nDOB: ${formData.dob}\nAdmission Class: ${formData.admissioninto}\nAddress: ${formData.address}\nAadhar No: ${formData.aadhar}\nContact-1: ${formData.contact1}\nContact-2: ${formData.contact2}`;
 
   sendEmail(formattedData)
-      .then(() => {
-          // Set a flag to indicate successful form submission
-          req.session.submitted = true;
-          res.redirect('/admission');
-      })
-      .catch((error) => {
-          console.error('Error sending email:', error);
-          // Set an error flag to indicate form submission error
-          req.session.error = true;
-          res.redirect('/admission');
-      });
+    .then(() => {
+      // Set a flag to indicate successful form submission
+      req.session.submitted = true;
+      res.redirect("/admission");
+    })
+    .catch((error) => {
+      console.error("Error sending email:", error);
+      // Set an error flag to indicate form submission error
+      req.session.error = true;
+      res.redirect("/admission");
+    });
 });
-
 
 const appId = "1668647766970031";
 const appSecret = "1feef404e27715163eb2da055d931b88";
-let oldAccessToken = "EAAXtoFVnzq8BAI20Hi6TSrhVC2QDGQQup045N4UxQgq7b1qAJErIfftCTRbcNWTZCSC6Ltr8wU1ZAnRHV83mKwJFfcNMyk7ZCtRFl6VpYkboO4xkRNQBghB0xIexpaNk4ETx88aq4Mqa0ZAZCpQxAQtQZCm5oQrrZCCeQ70GgXo41yif8xM6gxL8oUAqNaqdGOBkiClZBxW5EKsxSLNhCql8";
+let oldAccessToken =
+  "EAAXtoFVnzq8BAI20Hi6TSrhVC2QDGQQup045N4UxQgq7b1qAJErIfftCTRbcNWTZCSC6Ltr8wU1ZAnRHV83mKwJFfcNMyk7ZCtRFl6VpYkboO4xkRNQBghB0xIexpaNk4ETx88aq4Mqa0ZAZCpQxAQtQZCm5oQrrZCCeQ70GgXo41yif8xM6gxL8oUAqNaqdGOBkiClZBxW5EKsxSLNhCql8";
 
 app.get("/fb-token", function (req, res) {
-  fetchNewAccessToken(appId, appSecret, oldAccessToken, function (newAccessToken) {
-    oldAccessToken = newAccessToken;
-    res.send("Access token renewed successfully!");
-  });
+  fetchNewAccessToken(
+    appId,
+    appSecret,
+    oldAccessToken,
+    function (newAccessToken) {
+      oldAccessToken = newAccessToken;
+      res.send("Access token renewed successfully!");
+    }
+  );
   renewAccessToken();
   res.send("Access token renewed successfully!");
 });
 
-app.get('/gallery', (req, res) => {
-  const galleryPath = path.join(__dirname, 'public', 'images', 'gallery');
+app.get("/gallery", (req, res) => {
+  const galleryPath = path.join(__dirname, "public", "images", "gallery");
 
   fs.readdir(galleryPath, (err, folders) => {
     if (err) {
-      console.error('Error reading gallery folders:', err);
-      res.render('gallery', { folders: [], photos: {} });
+      console.error("Error reading gallery folders:", err);
+      res.render("gallery", { folders: [], photos: {} });
       return;
     }
 
@@ -286,15 +315,12 @@ app.get('/gallery', (req, res) => {
 
         if (Object.keys(photos).length === folders.length) {
           // All folders have been processed, render the template
-          res.render('gallery', { folders, photos });
+          res.render("gallery", { folders, photos });
         }
       });
     });
   });
 });
-
-
-
 
 app.get("/fee", function (req, res) {
   res.render("fee");
@@ -307,7 +333,7 @@ app.get("/ssc-results", function (req, res) {
 app.get("/rules", function (req, res) {
   res.render("rules");
 });
- 
+
 app.get("/student-login", (req, res) => {
   res.render("student-login", { message: "" });
 });
@@ -315,14 +341,20 @@ app.get("/student-login", (req, res) => {
 app.get("/circulars", async (req, res) => {
   try {
     const circulars = await Circular.find().sort({ date: -1 });
-    res.render("circulars", { circulars, message: "", teacherLoggedIn: req.session.teacher });
+    res.render("circulars", {
+      circulars,
+      message: "",
+      teacherLoggedIn: req.session.teacher,
+    });
   } catch (error) {
     console.error("Error retrieving circulars:", error);
-    res.render("circulars", { circulars: [], message: "Error retrieving circulars", teacherLoggedIn: req.session.teacher });
+    res.render("circulars", {
+      circulars: [],
+      message: "Error retrieving circulars",
+      teacherLoggedIn: req.session.teacher,
+    });
   }
 });
-
-
 
 app.get("/teacher-login", (req, res) => {
   res.render("teacher-login", { message: "" });
@@ -360,14 +392,13 @@ app.post("/post-circular", async (req, res) => {
 
   try {
     await circular.save();
-    io.emit('newCircular', circular);
+    io.emit("newCircular", circular);
     return res.redirect("/post-circular");
   } catch (error) {
     console.error("Error posting circular:", error);
     return res.redirect("/post-circular");
   }
 });
-
 
 app.delete("/circulars/:id", async (req, res) => {
   if (req.session.teacher) {
@@ -386,9 +417,6 @@ app.delete("/circulars/:id", async (req, res) => {
   }
 });
 
-
 app.listen(PORT, function () {
   console.log(`Server started at port ${PORT}.`);
 });
-
-

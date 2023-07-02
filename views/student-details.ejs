@@ -32,7 +32,31 @@
       <ul class="list-group">
         <% for (const key in studentDetails) { %>
           <li class="list-group-item">
-            <strong><%= key %>:</strong>
+            <% let renamedKey = key; %>
+            <% switch (key) {
+              case 'S NAME':
+                renamedKey = 'Student Name';
+                break;
+              case 'F NAME':
+                renamedKey = 'Father Name';
+                break;
+              case 'M NAME':
+                renamedKey = 'Mother Name';
+                break;
+              case 'ADMN':
+                renamedKey = 'Admission Number';
+                break;
+              case 'AADHAR NO':
+                renamedKey = 'Aadhar Number';
+                break;
+              case 'PH-1':
+                renamedKey = 'Phone Number - 1';
+                break;
+              case 'PH-2':
+                renamedKey = 'Phone Number - 2';
+                break;
+            } %>
+            <strong><%= renamedKey %>:</strong>
             <% if (key === 'Exam Result') { %>
               <% const examResult = studentDetails[key]; %>
               <% if (Array.isArray(examResult) && examResult.length > 0) { %>

@@ -1,26 +1,50 @@
 const xlsx = require("xlsx");
 const fs = require("fs");
-const Student = require("./models/student");
 const nodemailer = require("nodemailer");
-const https = require("https");
 
-var accessToken =
-  "EAAXtoFVnzq8BAOZB8TEL5DB02ZB3zhjdf2cdcgIBGhdDobJA9SH1GmB4UDxncaLEtxAQoeP77WkWwmeFUOMZCgLaKjaAhrqfZAbYwTJgenAQYppFSCI8ZAVeW4nJfulKxmwu9LtHW8NfZCGw3PFWS7jwRDnvCDoQxH8umsxcN7SVdO3sUGegpTCy2sq1v8ssZC1ZCelkHVxJE0HfhV43nU4yzCt7OalXf5IZD";
-
-async function populateDatabaseFromExcel(filePath) {
+async function populateDatabaseFromExcel(
+  filePath,
+  isDaySchool,
+  regularModel,
+  dayModel
+) {
   try {
     const workbook = xlsx.readFile(filePath);
     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-    const jsonData = xlsx.utils.sheet_to_json(worksheet);
+    const jsonData = xlsx.utils.sheet_to_json(worksheet, { header: 1 });
 
-    const students = jsonData.map((data) => new Student(data));
+    const headers = jsonData[1];
 
-    await Student.insertMany(students);
-    console.log("Database populated successfully.");
+    // Remove the first two rows (heading and headers)
+    jsonData.splice(0, 2);
+
+    const students = [];
+
+    jsonData.forEach((row) => {
+      const studentData = {};
+
+      // Map the values in each row to their respective headers
+      for (let i = 0; i < headers.length; i++) {
+        studentData[headers[i]] = row[i];
+      }
+
+      const model = isDaySchool ? dayModel : regularModel;
+      const student = new model(studentData);
+      students.push(student);
+    });
+
+    // Delete existing collection
+    const model = isDaySchool ? dayModel : regularModel;
+
+    console.log(students);
+    await model.insertMany(students);
+
+    console.log(`Database populated from ${filePath}.`);
   } catch (error) {
     throw error;
   }
 }
+
 
 async function populateMarksFromExcel(filePath, examName) {
   try {
@@ -46,7 +70,7 @@ async function populateMarksFromExcel(filePath, examName) {
         }
 
         const student = await Student.findOne({
-          "Admission Number": admissionNumber,
+          ADMN: admissionNumber,
         });
 
         if (!student) {
@@ -153,7 +177,6 @@ function calculateGrade(marks) {
   }
 }
 
-
 function calculatePoints(grade) {
   if (grade === "A1") {
     return 10;
@@ -175,7 +198,6 @@ function calculatePoints(grade) {
     return 0;
   }
 }
-
 
 function calculateOverallGrade(percentage) {
   if (percentage >= 91) {
@@ -199,7 +221,6 @@ function calculateOverallGrade(percentage) {
   }
 }
 
-
 function calculateGPA(pointsArray) {
   if (pointsArray.length === 0) {
     return 0;
@@ -211,8 +232,6 @@ function calculateGPA(pointsArray) {
 
   return gpa;
 }
-
-
 
 module.exports = {
   populateDatabaseFromExcel,

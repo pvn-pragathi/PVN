@@ -16,19 +16,33 @@ const examSchema = new mongoose.Schema({
 
 const studentSchema = new mongoose.Schema({
   SNO: Number,
-  "Student Name": String,
-  "Admission Number": Number,
+  "S NAME": String,
+  "ADMN": Number,
   DOB: String,
-  "Father Name": String,
-  "Mother Name": String,
-  Class: Number,
+  "F NAME": String,
+  "M NAME": String,
+  CLASS: String,
   Section: String,
-  "Phone no - 1": Number,
-  "Phone no - 2": Number,
-  "Aadhar Number": Number,
+  "PH-1": String,
+  "PH-2": String,
+  "AADHAR NO": Number,
   "Exam Result": [examSchema],
 });
 
 const Student = mongoose.model("Student", studentSchema);
 
-module.exports = Student;
+const dayStudentSchema = new mongoose.Schema({
+  "NAME OF THE STUDENT": String,
+  "SECTION": String,
+  "FATHER NAME": String,
+  "MOTHER NAME": String,
+  "CONTACT NO-I": String,
+  "CONTACT NO-II": String,
+  "ADMN": Number,
+  "AADHAR": Number,
+  "Exam Result": [examSchema],
+});
+
+const DayStudent = mongoose.model("DayStudent", dayStudentSchema);
+
+module.exports = { Student, DayStudent };

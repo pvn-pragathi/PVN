@@ -69,3 +69,4 @@ function calculateGPA(marks) {
 function roundToOneDecimal(number) {
   return Math.round(number * 10) / 10;
 }
+
