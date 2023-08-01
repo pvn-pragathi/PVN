@@ -41,12 +41,12 @@ async function populateDatabaseFromExcel(
 
     console.log(`Database populated from ${filePath}.`);
   } catch (error) {
+    console.error(`Error populating database from ${filePath}:`, error);
     throw error;
   }
 }
 
-
-async function populateMarksFromExcel(filePath, examName) {
+async function populateMarksFromExcel(filePath, examName, regularModel, dayModel) {
   try {
     const workbook = xlsx.readFile(filePath);
     const sheetNames = workbook.SheetNames;
@@ -62,22 +62,15 @@ async function populateMarksFromExcel(filePath, examName) {
         const admissionNumber = row[0];
 
         if (!admissionNumber) {
-          console.log(
-            "Invalid admission number in row:",
-            marksData.indexOf(row) + 2
-          );
+          console.log("Invalid admission number in row:", marksData.indexOf(row) + 2);
           continue;
         }
 
-        const student = await Student.findOne({
-          ADMN: admissionNumber,
-        });
+        const model = isDaySchool ? dayModel : regularModel;
+        const student = await model.findOne({ ADMN: admissionNumber });
 
         if (!student) {
-          console.log(
-            "No student found with admission number:",
-            admissionNumber
-          );
+          console.log("No student found with admission number:", admissionNumber);
           continue;
         }
 
@@ -91,9 +84,7 @@ async function populateMarksFromExcel(filePath, examName) {
           }
         }
 
-        const examIndex = student["Exam Result"].findIndex(
-          (exam) => exam.name === examName
-        );
+        const examIndex = student["Exam Result"].findIndex((exam) => exam.name === examName);
 
         if (examIndex === -1) {
           student["Exam Result"].push({ name: examName, marks: examMarks });
@@ -102,15 +93,10 @@ async function populateMarksFromExcel(filePath, examName) {
         }
 
         await student.save();
-        console.log(
-          "Marks updated for student with admission number:",
-          admissionNumber
-        );
+        console.log("Marks updated for student with admission number:", admissionNumber);
       }
 
-      console.log(
-        `Marks population from Sheet "${sheetName}" completed successfully.`
-      );
+      console.log(`Marks population from Sheet "${sheetName}" completed successfully.`);
     }
 
     console.log("Marks population from all sheets completed successfully.");
@@ -118,6 +104,8 @@ async function populateMarksFromExcel(filePath, examName) {
     throw error;
   }
 }
+
+
 
 function getLatestFilePath(directoryPath) {
   const files = fs.readdirSync(directoryPath);

@@ -7,7 +7,6 @@ const mongoose = require("mongoose");
 const methodOverride = require("method-override");
 const http = require("http");
 const socketIO = require("socket.io");
-const { Student, DayStudent } = require("./models/student");
 const Circular = require("./models/circular");
 const {
   populateDatabaseFromExcel,
@@ -52,7 +51,7 @@ const upload = multer({ storage: storage });
 app.use(methodOverride("_method"));
 
 const uri =
-  "mongodb+srv://swaroop-chikkam:630swaroop@pvn.vdv88pa.mongodb.net/studentDataDB?retryWrites=true&w=majority";
+  "mongodb+srv://swaroop-chikkam:630swaroop@pvn.vdv88pa.mongodb.net/PVNDB?retryWrites=true&w=majority";
 
 mongoose
   .connect(uri, {
@@ -73,128 +72,171 @@ db.once("open", () => {
   console.log("Connected to MongoDB");
 });
 
-app.get("/admin", function(req, res){
-  res.render("admin", {message: ""});
-});
+// app.get("/admin", function (req, res) {
+//   res.render("admin", { message: "" });
+// });
 
-app.post("/admin", upload.fields([
-  { name: 'file', maxCount: 1 },
-  { name: 'fileFA1', maxCount: 1 },
-  { name: 'fileFA2', maxCount: 1 },
-  { name: 'fileFA3', maxCount: 1 },
-  { name: 'fileFA4', maxCount: 1 },
-  { name: 'fileSA1', maxCount: 1 },
-  { name: 'fileSA2', maxCount: 1 },
-  { name: 'daySchoolFiles', maxCount: 25 }
-]), async function (req, res) {
-  const username = req.body.username.trim();
-  const password = req.body.password.trim();
+// app.post(
+//   "/admin",
+//   upload.fields([
+//     { name: "file", maxCount: 1 },
+//     { name: "fileFA1", maxCount: 1 },
+//     { name: "fileFA2", maxCount: 1 },
+//     { name: "fileFA3", maxCount: 1 },
+//     { name: "fileFA4", maxCount: 1 },
+//     { name: "fileSA1", maxCount: 1 },
+//     { name: "fileSA2", maxCount: 1 },
+//     { name: "daySchoolFiles", maxCount: 25 },
+//   ]),
+//   async function (req, res) {
+//     const username = req.body.username.trim();
+//     const password = req.body.password.trim();
 
-  if (username === "PVN@admin" && password === "PVN@website") {
-    req.session.adminAuthenticated = true;
+//     if (username === "PVN@admin" && password === "PVN@website") {
+//       req.session.adminAuthenticated = true;
 
-    if (req.files) {
-      const examFiles = [
-        { fieldName: 'fileFA1', examName: 'FA-1' },
-        { fieldName: 'fileFA2', examName: 'FA-2' },
-        { fieldName: 'fileFA3', examName: 'FA-3' },
-        { fieldName: 'fileFA4', examName: 'FA-4' },
-        { fieldName: 'fileSA1', examName: 'SA-1' },
-        { fieldName: 'fileSA2', examName: 'SA-2' }
-      ];
+//       if (req.files) {
+//         const examFiles = [
+//           { fieldName: "fileFA1", examName: "FA-1" },
+//           { fieldName: "fileFA2", examName: "FA-2" },
+//           { fieldName: "fileFA3", examName: "FA-3" },
+//           { fieldName: "fileFA4", examName: "FA-4" },
+//           { fieldName: "fileSA1", examName: "SA-1" },
+//           { fieldName: "fileSA2", examName: "SA-2" },
+//         ];
 
-      for (const examFile of examFiles) {
-        const fieldName = examFile.fieldName;
-        const examName = examFile.examName;
-        const files = req.files[fieldName];
+//         for (const examFile of examFiles) {
+//           const fieldName = examFile.fieldName;
+//           const examName = examFile.examName;
+//           const files = req.files[fieldName];
 
-        if (files && files.length > 0) {
-          const file = files[0];
-          const newFilePath = path.join(__dirname, "student-marks-sheet", `${examName}.xlsx`);
-          const previousFilePath = getLatestFilePath("student-marks-sheet/");
+//           if (files && files.length > 0) {
+//             const file = files[0];
+//             const newFilePath = path.join(
+//               __dirname,
+//               "student-marks-sheet",
+//               `${examName}.xlsx`
+//             );
+//             const previousFilePath = getLatestFilePath("student-marks-sheet/");
 
-          if (previousFilePath) {
-            fs.unlinkSync(previousFilePath);
-            console.log(`Previous file ${previousFilePath} removed.`);
-          }
+//             if (previousFilePath) {
+//               fs.unlinkSync(previousFilePath);
+//               console.log(`Previous file ${previousFilePath} removed.`);
+//             }
 
-          fs.renameSync(file.path, newFilePath);
-          console.log(`File ${file.path} moved to ${newFilePath}.`);
+//             fs.renameSync(file.path, newFilePath);
+//             console.log(`File ${file.path} moved to ${newFilePath}.`);
 
-          try {
-            await populateMarksFromExcel(newFilePath, examName);
-            console.log(`Marks population for ${examName} completed successfully.`);
-          } catch (error) {
-            console.error(`Error updating marks for ${examName}:`, error);
-          }
-        } else {
-          console.log(`No file uploaded for ${examName}`);
-        }
-      }
+//             try {
+//               await populateMarksFromExcel(newFilePath, examName);
+//               console.log(
+//                 `Marks population for ${examName} completed successfully.`
+//               );
+//             } catch (error) {
+//               console.error(`Error updating marks for ${examName}:`, error);
+//             }
+//           } else {
+//             console.log(`No file uploaded for ${examName}`);
+//           }
+//         }
 
-      const schoolDataFiles = req.files['file'];
+//         const schoolDataFiles = req.files["file"];
 
-      if (schoolDataFiles && schoolDataFiles.length > 0) {
-        const schoolDataFile = schoolDataFiles[0];
-        const newFilePath = path.join(__dirname, "student-details", schoolDataFile.originalname);
-        const previousFilePath = getLatestFilePath("student-details/");
+//         if (schoolDataFiles && schoolDataFiles.length > 0) {
+//           const schoolDataFile = schoolDataFiles[0];
+//           const newFilePath = path.join(
+//             __dirname,
+//             "student-details",
+//             schoolDataFile.originalname
+//           );
+//           const previousFilePath = getLatestFilePath("student-details/");
 
-        if (previousFilePath) {
-          fs.unlinkSync(previousFilePath);
-          console.log(`Previous file ${previousFilePath} removed.`);
-        }
+//           if (previousFilePath) {
+//             fs.unlinkSync(previousFilePath);
+//             console.log(`Previous file ${previousFilePath} removed.`);
+//           }
 
-        fs.renameSync(schoolDataFile.path, newFilePath);
-        console.log(`File ${schoolDataFile.path} moved to ${newFilePath}.`);
+//           fs.renameSync(schoolDataFile.path, newFilePath);
+//           console.log(`File ${schoolDataFile.path} moved to ${newFilePath}.`);
 
-        try {
-          await populateDatabaseFromExcel(newFilePath, false, Student, DayStudent);
-          console.log("School database updated successfully.");
-        } catch (error) {
-          console.error("Error updating school database:", error);
-        }
-      } else {
-        console.log("No school data file uploaded");
-      }
+//           try {
+//             await populateDatabaseFromExcel(
+//               newFilePath,
+//               false,
+//               Student,
+//               DayStudent
+//             );
+//             console.log("School database updated successfully.");
+//           } catch (error) {
+//             console.error("Error updating school database:", error);
+//           }
+//         } else {
+//           console.log("No school data file uploaded");
+//         }
 
-      const daySchoolDataFiles = req.files['daySchoolFiles'];
+//         const daySchoolDataFiles = req.files["daySchoolFiles"];
 
-      if (daySchoolDataFiles && daySchoolDataFiles.length > 0) {
-        for (const daySchoolDataFile of daySchoolDataFiles) {
-          const newFilePath = path.join(__dirname, "day-student-details", daySchoolDataFile.originalname);
-          const previousFilePath = getLatestFilePath("day-student-details/");
+//         if (daySchoolDataFiles && daySchoolDataFiles.length > 0) {
+//           for (const daySchoolDataFile of daySchoolDataFiles) {
+//             const newFilePath = path.join(
+//               __dirname,
+//               "day-student-details",
+//               daySchoolDataFile.originalname
+//             );
+//             const previousFilePath = path.join(
+//               __dirname,
+//               "day-student-details",
+//               daySchoolDataFile.originalname
+//             );
 
-          fs.renameSync(daySchoolDataFile.path, newFilePath);
-          console.log(`File ${daySchoolDataFile.path} moved to ${newFilePath}.`);
+//             if (fs.existsSync(previousFilePath)) {
+//               fs.unlinkSync(previousFilePath);
+//               console.log(`Previous file ${previousFilePath} removed.`);
+//             }
 
-          try {
-            await populateDatabaseFromExcel(newFilePath, true, Student, DayStudent);
-            console.log("Day school database updated successfully.");
-          } catch (error) {
-            console.error("Error updating day school database:", error);
-          }
-        }
-      } else {
-        console.log("No day school data files uploaded");
-      }
-    } else {
-      console.log("No files uploaded");
-    }
+//             fs.renameSync(daySchoolDataFile.path, newFilePath);
+//             console.log(
+//               `File ${daySchoolDataFile.path} moved to ${newFilePath}.`
+//             );
 
-    res.redirect("/admin");
-  } else {
-    res.redirect("/admin?error=Authentication failed");
-  }
-});
+//             try {
+//               await populateDatabaseFromExcel(
+//                 newFilePath,
+//                 true,
+//                 Student,
+//                 DayStudent
+//               );
+//               console.log("Day school database updated successfully.");
+//             } catch (error) {
+//               console.error("Error updating day school database:", error);
+//             }
+//           }
+//         } else {
+//           console.log("No day school data files uploaded");
+//         }
+//       } else {
+//         console.log("No files uploaded");
+//       }
+
+//       res.redirect("/admin");
+//     } else {
+//       res.redirect("/admin?error=Authentication failed");
+//     }
+//   }
+// );
 
 app.post("/student-login", async (req, res) => {
   const aadharNumber = req.body.aadhar.replace(/\s/g, "");
   const password = req.body.password;
   try {
-    var student = await Student.findOne({ "AADHAR NO": aadharNumber });
-    
+    var student = await db
+      .collection("hostel_students")
+      .findOne({ "AADHAR NO": aadharNumber });
+
     if (!student) {
-      var student = await DayStudent.findOne({ "AADHAR": aadharNumber});
+      var student = await db
+        .collection("day_students_collection")
+        .findOne({ AADHAR: aadharNumber });
     }
 
     if (!student) {
@@ -214,16 +256,21 @@ app.post("/student-login", async (req, res) => {
       console.log("Invalid password");
       return res.render("student-login", { message: "Invalid password" });
     }
-    const studentDetails = student.toObject();
+    const studentDetails = student;
     delete studentDetails._id;
-    delete studentDetails.__v;
-    delete studentDetails.SNO;
     req.session.student = {
-      class: studentDetails.Class,
+      class: studentDetails.CLASS,
     };
     req.session.studentId = student._id; // Store the student ID in the session
     res.set("Cache-Control", "no-store");
-    return res.render("student-details", { studentDetails, marks: true , calculateGrade, calculatePoints, calculateOverallGrade, calculateGPA});
+    return res.render("student-details", {
+      studentDetails,
+      marks: true,
+      calculateGrade,
+      calculatePoints,
+      calculateOverallGrade,
+      calculateGPA,
+    });
     // Rest of the code...
   } catch (error) {
     console.error("Error retrieving student details from the database:", error);
@@ -232,6 +279,7 @@ app.post("/student-login", async (req, res) => {
     });
   }
 });
+
 
 app.get("/", function (req, res) {
   res.render("index");
@@ -269,25 +317,6 @@ app.post("/admission", function (req, res) {
       req.session.error = true;
       res.redirect("/admission");
     });
-});
-
-const appId = "1668647766970031";
-const appSecret = "1feef404e27715163eb2da055d931b88";
-let oldAccessToken =
-  "EAAXtoFVnzq8BAI20Hi6TSrhVC2QDGQQup045N4UxQgq7b1qAJErIfftCTRbcNWTZCSC6Ltr8wU1ZAnRHV83mKwJFfcNMyk7ZCtRFl6VpYkboO4xkRNQBghB0xIexpaNk4ETx88aq4Mqa0ZAZCpQxAQtQZCm5oQrrZCCeQ70GgXo41yif8xM6gxL8oUAqNaqdGOBkiClZBxW5EKsxSLNhCql8";
-
-app.get("/fb-token", function (req, res) {
-  fetchNewAccessToken(
-    appId,
-    appSecret,
-    oldAccessToken,
-    function (newAccessToken) {
-      oldAccessToken = newAccessToken;
-      res.send("Access token renewed successfully!");
-    }
-  );
-  renewAccessToken();
-  res.send("Access token renewed successfully!");
 });
 
 app.get("/gallery", (req, res) => {

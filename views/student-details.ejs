@@ -1,7 +1,4 @@
 <%- include('header') -%>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <style>
 
   table{
@@ -31,90 +28,92 @@
     <div class="col-md-12">
       <ul class="list-group">
         <% for (const key in studentDetails) { %>
-          <li class="list-group-item">
-            <% let renamedKey = key; %>
-            <% switch (key) {
-              case 'S NAME':
-                renamedKey = 'Student Name';
-                break;
-              case 'F NAME':
-                renamedKey = 'Father Name';
-                break;
-              case 'M NAME':
-                renamedKey = 'Mother Name';
-                break;
-              case 'ADMN':
-                renamedKey = 'Admission Number';
-                break;
-              case 'AADHAR NO':
-                renamedKey = 'Aadhar Number';
-                break;
-              case 'PH-1':
-                renamedKey = 'Phone Number - 1';
-                break;
-              case 'PH-2':
-                renamedKey = 'Phone Number - 2';
-                break;
-            } %>
-            <strong><%= renamedKey %>:</strong>
-            <% if (key === 'Exam Result') { %>
-              <% const examResult = studentDetails[key]; %>
-              <% if (Array.isArray(examResult) && examResult.length > 0) { %>
-                <% examResult.forEach((exam) => { %>
-                  <h2 class="h1 mb-3 mt-5"><%= exam.name %></h2>
-                  <table class="table table-bordered black-bordered">
-                    <thead>
-                      <tr>
-                        <th>Subject</th>
-                        <th>Marks</th>
-                        <th>Grade</th>
-                        <th>Point</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <% const subjectPoints = []; %>
-                      <% let totalMarks = 0; %>
-                      <% const marks = exam.marks; %>
-                      <% for (const subject in marks) { %>
-                        <% if (subject !== '_id') { %>
-                          <% const subjectMarks = marks[subject]; %>
-                          <% const grade = calculateGrade(subjectMarks); %>
-                          <% const point = calculatePoints(grade); %>
-                          <% const marksObtained = parseInt(subjectMarks, 10); %>
-                          <tr>
-                            <td><em><%= subject %></em></td>
-                            <td><%= marksObtained %></td>
-                            <td><%= grade %></td>
-                            <td><%= point %></td>
-                          </tr>
-                          <% subjectPoints.push(point); %>
-                          <% totalMarks += marksObtained; %>
+          <% if (key !== 'SNO') { %> <!-- Add this if condition to skip 'SNO' field -->
+            <li class="list-group-item">
+              <% let renamedKey = key; %>
+              <% switch (key) {
+                case 'S NAME':
+                  renamedKey = 'Student Name';
+                  break;
+                case 'F NAME':
+                  renamedKey = 'Father Name';
+                  break;
+                case 'M NAME':
+                  renamedKey = 'Mother Name';
+                  break;
+                case 'ADMN':
+                  renamedKey = 'Admission Number';
+                  break;
+                case 'AADHAR NO':
+                  renamedKey = 'Aadhar Number';
+                  break;
+                case 'PH-1':
+                  renamedKey = 'Phone Number - 1';
+                  break;
+                case 'PH-2':
+                  renamedKey = 'Phone Number - 2';
+                  break;
+              } %>
+              <strong><%= renamedKey %>:</strong>
+              <% if (key === 'Exam Result') { %>
+                <% const examResult = studentDetails[key]; %>
+                <% if (Array.isArray(examResult) && examResult.length > 0) { %>
+                  <% examResult.forEach((exam) => { %>
+                    <h2 class="h1 mb-3 mt-5"><%= exam.name %></h2>
+                    <table class="table table-bordered black-bordered">
+                      <thead>
+                        <tr>
+                          <th>Subject</th>
+                          <th>Marks</th>
+                          <th>Grade</th>
+                          <th>Point</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% const subjectPoints = []; %>
+                        <% let totalMarks = 0; %>
+                        <% const marks = exam.marks; %>
+                        <% for (const subject in marks) { %>
+                          <% if (subject !== '_id') { %>
+                            <% const subjectMarks = marks[subject]; %>
+                            <% const grade = calculateGrade(subjectMarks); %>
+                            <% const point = calculatePoints(grade); %>
+                            <% const marksObtained = parseInt(subjectMarks, 10); %>
+                            <tr>
+                              <td><em><%= subject %></em></td>
+                              <td><%= marksObtained %></td>
+                              <td><%= grade %></td>
+                              <td><%= point %></td>
+                            </tr>
+                            <% subjectPoints.push(point); %>
+                            <% totalMarks += marksObtained; %>
+                          <% } %>
                         <% } %>
-                      <% } %>
-                      <tr>
-                        <td><strong>Total</strong></td>
-                        <% const percentage = ((totalMarks / 120 * 100) || 0).toFixed(2); %>
-                        <td><strong><%= totalMarks %></strong></td>
-                        <td><strong><%= calculateOverallGrade(percentage) %></strong></td>
-                        <td><strong>
-                          <% const gpa = calculateGPA(subjectPoints); %>
-                          <%= gpa.toFixed(1) %>
-                        </strong></td>
-                      </tr>
-                      <tr>
-                        <td><strong>Percentage</strong></td>
-                        <td colspan="3"><strong><%= percentage %>%</strong></td>
-                      </tr>
-                    </tbody>
-                  </table>
-                <% }); %>
+                        <tr>
+                          <td><strong>Total</strong></td>
+                          <% const percentage = ((totalMarks / 120 * 100) || 0).toFixed(2); %>
+                          <td><strong><%= totalMarks %></strong></td>
+                          <td><strong><%= calculateOverallGrade(percentage) %></strong></td>
+                          <td><strong>
+                            <% const gpa = calculateGPA(subjectPoints); %>
+                            <%= gpa.toFixed(1) %>
+                          </strong></td>
+                        </tr>
+                        <tr>
+                          <td><strong>Percentage</strong></td>
+                          <td colspan="3"><strong><%= percentage %>%</strong></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  <% }); %>
+                <% } else { %>
+                  No exam results available.
+                <% } %>
               <% } else { %>
-                No exam results available.
+                <%= studentDetails[key] %>
               <% } %>
-            <% } else { %>
-              <%= studentDetails[key] %>
-            <% } %>
-          </li>
+            </li>
+          <% } %>
         <% } %>
       </ul>
     </div>
