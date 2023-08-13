@@ -229,16 +229,19 @@ app.post("/student-login", async (req, res) => {
   const aadharNumber = req.body.aadhar.replace(/\s/g, "");
   const password = req.body.password;
   try {
+    // First, check in hostel_students collection
     var student = await db
       .collection("hostel_students")
-      .findOne({ "AADHAR NO": aadharNumber });
+      .findOne({ "AADHAR NO": aadharNumber }, { maxTimeMS: 30000 });
 
+    // If no data found in hostel_students, check in day_students_collection
     if (!student) {
-      var student = await db
+      student = await db
         .collection("day_students_collection")
-        .findOne({ AADHAR: aadharNumber });
+        .findOne({ AADHAR: aadharNumber }, {maxTimeMS: 30000 });
     }
 
+    // If still no data found, display an error message
     if (!student) {
       console.log(
         "Aadhar number not found in the database. Please update your Aadhar number in the database."
@@ -249,13 +252,15 @@ app.post("/student-login", async (req, res) => {
       });
     }
 
+    // Rest of the existing code to handle authentication and rendering the student details
     var admissionNumber = student["ADMN"].toString();
-
     const expectedPassword = `PVN@${admissionNumber}`;
+
     if (password !== expectedPassword) {
       console.log("Invalid password");
       return res.render("student-login", { message: "Invalid password" });
     }
+
     const studentDetails = student;
     delete studentDetails._id;
     req.session.student = {
@@ -271,7 +276,6 @@ app.post("/student-login", async (req, res) => {
       calculateOverallGrade,
       calculateGPA,
     });
-    // Rest of the code...
   } catch (error) {
     console.error("Error retrieving student details from the database:", error);
     return res.render("student-login", {
@@ -279,7 +283,6 @@ app.post("/student-login", async (req, res) => {
     });
   }
 });
-
 
 app.get("/", function (req, res) {
   res.render("index");
