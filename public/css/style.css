@@ -313,7 +313,7 @@ td {
 
 .image-gallery {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap:nowrap;
   flex-direction: row;
   justify-content: center;
   min-width: 85vw;
