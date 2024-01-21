@@ -326,7 +326,7 @@ app.post("/admission", function (req, res) {
 
 const GITHUB_REPO_OWNER = 'pvn-pragathi';
 const GITHUB_REPO_NAME = 'PVN-gallery';
-const GITHUB_ACCESS_TOKEN = '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';
+const GITHUB_ACCESS_TOKEN = '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';
 
 app.get('/gallery', async (req, res) => {
   try {
@@ -385,83 +385,83 @@ function isImageFile(filename) {
   return imageExtensions.includes(ext);
 }
 
-const gallery_storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/');
-  },
-  filename: function (req, file, cb) {
-    cb(null, uuidv4() + '-' + file.originalname);
-  },
-});
+// const gallery_storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, 'uploads/');
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, uuidv4() + '-' + file.originalname);
+//   },
+// });
 
-const gallery_upload = multer({ storage: gallery_storage });
+// const gallery_upload = multer({ storage: gallery_storage });
 
-// Render gallery-login or gallery-upload page based on authentication
-app.get('/gallery-upload', (req, res) => {
-  // Check if user is already authenticated (replace this with your actual logic)
-  const isAuthenticated = req.session.isAuthenticated === true;
+// // Render gallery-login or gallery-upload page based on authentication
+// app.get('/gallery-upload', (req, res) => {
+//   // Check if user is already authenticated (replace this with your actual logic)
+//   const isAuthenticated = req.session.isAuthenticated === true;
 
-  if (isAuthenticated) {
-    res.render('gallery-upload.ejs');
-  } else {
-    res.render('gallery-login.ejs');
-  }
-});
+//   if (isAuthenticated) {
+//     res.render('gallery-upload.ejs');
+//   } else {
+//     res.render('gallery-login.ejs');
+//   }
+// });
 
-// Handle authentication
-app.post('/gallery-upload', (req, res) => {
-  const { username, password } = req.body;
+// // Handle authentication
+// app.post('/gallery-upload', (req, res) => {
+//   const { username, password } = req.body;
 
-  // Check credentials (replace this with your actual authentication logic)
-  if (username === 'PVN@admin' && password === 'PVN@gallery') {
-    // Set authentication status in session
-    req.session.isAuthenticated = true;
-    // Redirect to the /gallery-upload route after successful authentication
-    res.redirect('/gallery-upload');
-  } else {
-    res.send('Invalid credentials');
-  }
-});
+//   // Check credentials (replace this with your actual authentication logic)
+//   if (username === 'PVN@admin' && password === 'PVN@gallery') {
+//     // Set authentication status in session
+//     req.session.isAuthenticated = true;
+//     // Redirect to the /gallery-upload route after successful authentication
+//     res.redirect('/gallery-upload');
+//   } else {
+//     res.send('Invalid credentials');
+//   }
+// });
 
-app.post('/gallery-upload', upload.array('images'), async (req, res) => {
-  const { title } = req.body;
-  const images = req.files;
+// app.post('/gallery-upload', upload.array('images'), async (req, res) => {
+//   const { title } = req.body;
+//   const images = req.files;
 
-  // Authenticate with GitHub (replace with your actual authentication logic)
-  const token = GITHUB_ACCESS_TOKEN; // Replace with your GitHub token
-  const headers = { Authorization: `Bearer ${token}` };
+//   // Authenticate with GitHub (replace with your actual authentication logic)
+//   const token = GITHUB_ACCESS_TOKEN; // Replace with your GitHub token
+//   const headers = { Authorization: `Bearer ${token}` };
 
-  // GitHub repository details
-  const owner = GITHUB_REPO_OWNER;
-  const repo = GITHUB_REPO_NAME;
-  const branch = 'main'; // Replace with your branch name
+//   // GitHub repository details
+//   const owner = GITHUB_REPO_OWNER;
+//   const repo = GITHUB_REPO_NAME;
+//   const branch = 'main'; // Replace with your branch name
 
-  // Loop through uploaded images and upload to GitHub
-  try {
-    for (const image of images) {
-      const content = fs.readFileSync(image.path, { encoding: 'base64' });
+//   // Loop through uploaded images and upload to GitHub
+//   try {
+//     for (const image of images) {
+//       const content = fs.readFileSync(image.path, { encoding: 'base64' });
 
-      // Create or update file in GitHub repository
-      await axios.put(
-        `https://api.github.com/repos/${owner}/${repo}/contents/${title}/${image.originalname}`,
-        {
-          message: 'Upload image',
-          content: content,
-          branch: branch,
-        },
-        { headers: headers }
-      );
+//       // Create or update file in GitHub repository
+//       await axios.put(
+//         `https://api.github.com/repos/${owner}/${repo}/contents/${title}/${image.originalname}`,
+//         {
+//           message: 'Upload image',
+//           content: content,
+//           branch: branch,
+//         },
+//         { headers: headers }
+//       );
 
-      // Optionally, you can remove the local file after uploading to GitHub
-      fs.unlinkSync(image.path);
-    }
+//       // Optionally, you can remove the local file after uploading to GitHub
+//       fs.unlinkSync(image.path);
+//     }
 
-    res.send('Images uploaded successfully');
-  } catch (error) {
-    console.error('Error uploading images to GitHub:', error.message);
-    res.status(500).send('Internal Server Error');
-  }
-});
+//     res.send('Images uploaded successfully');
+//   } catch (error) {
+//     console.error('Error uploading images to GitHub:', error.message);
+//     res.status(500).send('Internal Server Error');
+//   }
+// });
 
 app.get("/fee", function (req, res) {
   res.render("fee");
