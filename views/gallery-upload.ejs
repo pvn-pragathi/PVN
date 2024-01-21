@@ -1,0 +1,21 @@
+<%- include('header') -%>
+
+<h1 class="h1">Gallery Upload</h1>
+
+<div class="container">
+  <form action="/gallery-upload" method="post" enctype="multipart/form-data">
+    <div class="mb-3">
+      <label for="title" class="form-label">Title:</label>
+      <input type="text" id="title" name="title" class="form-control" required>
+    </div>
+    
+    <div class="mb-3">
+      <label for="images" class="form-label">Select images:</label>
+      <input type="file" id="images" name="images" class="form-control" accept="image/*" multiple required>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Upload</button>
+  </form>
+</div>
+
+<%- include('footer') -%>
