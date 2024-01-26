@@ -30,7 +30,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(
   session({
-    secret: "PRAGATHI12345",
+    secret: "Pragathi@12345",
     resave: false,
     saveUninitialized: true,
   })
@@ -325,65 +325,63 @@ app.post("/admission", function (req, res) {
 
 const GITHUB_REPO_OWNER = 'pvn-pragathi';
 const GITHUB_REPO_NAME = 'PVN-gallery';
-const GITHUB_ACCESS_TOKEN = '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';
-
+const GITHUB_ACCESS_TOKEN = "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"
 
 app.get('/gallery', async (req, res) => {
   try {
-    const repoContents = await getGitHubRepoContents(GITHUB_REPO_OWNER, GITHUB_REPO_NAME);
+    // Send a request to the GitHub API to get repository contents
+    const apiUrl = `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/contents/`;
 
-    const folders = repoContents.filter(item => item.type === 'dir').map(item => item.name);
+    // Include authorization header with the access token
+    const headers = {
+      Authorization: `Bearer ${GITHUB_ACCESS_TOKEN}`,
+    };
 
-    const photos = {};
+    const response = await axios.get(apiUrl, { headers });
 
-    for (const folder of folders) {
-      const folderContents = await getGitHubRepoContents(GITHUB_REPO_OWNER, GITHUB_REPO_NAME, folder);
-
-      const imageFiles = folderContents.filter(item => item.type === 'file' && isImageFile(item.name));
-
-      photos[folder] = await Promise.all(imageFiles.map(async item => {
-        const imageContent = await getGitHubFileContent(GITHUB_REPO_OWNER, GITHUB_REPO_NAME, item.path);
-        return {
-          name: item.name,
-          base64Image: Buffer.from(imageContent, 'base64').toString('base64'),
-        };
+    // Extract the names and URLs of folders
+    const folders = response.data
+      .filter(item => item.type === 'dir')
+      .map(item => ({
+        name: item.name,
+        url: item.url,
       }));
+
+    // Display images through download URL below each folder name
+    const photos = {};
+    for (const folder of folders) {
+      const folderContents = await axios.get(folder.url, { headers });
+      const imageFiles = folderContents.data
+        .filter(item => item.type === 'file')
+        .filter(item => isImageFile(item.name));
+
+      // Use map to directly include download_url in the photos object
+      photos[folder.name] = imageFiles.map(async (item) => {
+        const imageDetails = await axios.get(item.url, { headers });
+        return imageDetails.data.download_url;
+      });
     }
 
-    res.render('gallery', { folders, photos, GITHUB_REPO_OWNER, GITHUB_REPO_NAME });
+    // Resolve all promises in the photos object
+    const resolvedPhotos = await Promise.all(Object.values(photos).map(async (promise) => await Promise.all(promise)));
+
+    // Combine folder names with resolved download URLs
+    const combinedPhotos = Object.fromEntries(folders.map((folder, index) => [folder.name, resolvedPhotos[index]]));
+
+    res.render('gallery', { folders, photos: combinedPhotos, GITHUB_REPO_OWNER, GITHUB_REPO_NAME });
   } catch (err) {
     console.error('Error fetching GitHub repository contents:', err);
     res.render('gallery', { folders: [], photos: {}, GITHUB_REPO_OWNER, GITHUB_REPO_NAME });
   }
 });
 
-function getGitHubFileContent(owner, repo, path) {
-  const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
-
-  return axios.get(apiUrl, {
-    headers: {
-      Authorization: `Bearer ${GITHUB_ACCESS_TOKEN}`,
-    },
-    responseType: 'arraybuffer',
-  }).then(response => Buffer.from(response.data, 'binary').toString('base64'));
-}
-
-
-function getGitHubRepoContents(owner, repo, path = '') {
-  const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
-
-  return axios.get(apiUrl, {
-    headers: {
-      Authorization: `Bearer ${GITHUB_ACCESS_TOKEN}`,
-    },
-  }).then(response => response.data);
-}
 
 function isImageFile(filename) {
   const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'];
   const ext = path.extname(filename).toLowerCase();
   return imageExtensions.includes(ext);
 }
+
 
 // const gallery_storage = multer.diskStorage({
 //   destination: function (req, file, cb) {

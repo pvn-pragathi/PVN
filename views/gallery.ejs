@@ -3,24 +3,22 @@
 <h1 class="h1">Gallery</h1>
 
 <div class="gallery container">
-  <% Object.entries(photos).forEach(([folder, images]) => { %>
-    <div class="album-section">
-      <h2 class="h1"><%= folder %></h2>
-      <div class="d-flex justify-content-center flex-wrap">
-        <% images.forEach(photo => { %>
-          <div class="p-2">
-            <% try { %>
-              <% const jsonContent = JSON.parse(Buffer.from(photo.base64Image, 'base64').toString('utf-8')); %>
-              <!-- Now 'jsonContent' variable holds the extracted JSON content -->
-              <img src="<%= jsonContent.download_url %>" alt="<%= jsonContent.name %>" class="gallery-image mb-5">
-            <% } catch (error) { %>
-              <% console.error('Error parsing JSON content:', error); %>
-            <% } %>
-          </div>
-        <% }); %> 
+  <% try { %>
+    <% Object.entries(photos).forEach(([folder, images]) => { %>
+      <div class="album-section">
+        <h2 class="h1"><%= folder %></h2>
+        <div class="d-flex justify-content-center flex-wrap">
+          <% images.forEach(photo => { %>
+            <div class="p-2">
+              <img src="<%= photo %>" alt="<%= photo.name %>" class="gallery-image mb-5">
+            </div>
+          <% }); %> 
+        </div>
       </div>
-    </div>
-  <% }); %>
+    <% }); %>
+  <% } catch (error) { %>
+    <p>Error rendering gallery: <%= error.message %></p>
+  <% } %>
 </div>
 
 <%- include('footer') -%>
