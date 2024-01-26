@@ -9,7 +9,8 @@ const http = require("http");
 const socketIO = require("socket.io");
 const Circular = require("./models/circular");
 const axios = require('axios');
-const atob = require('atob');
+const passport = require('passport');
+const GitHubStrategy = require('passport-github').Strategy;
 const {
   populateDatabaseFromExcel,
   getLatestFilePath,
@@ -37,6 +38,26 @@ app.use(
   })
 );
 
+passport.serializeUser((user, done) => {
+  done(null, user);
+});
+
+passport.deserializeUser((obj, done) => {
+  done(null, obj);
+});
+
+passport.use(new GitHubStrategy({
+  clientID: "3270ce0df2250c3b9cfe",
+  clientSecret: "308d8d019adb9b8344f88b58456850315b88c7b1",
+  callbackURL: 'https://pragathividyaniketan.onrender.com/gallery', // Your callback URL
+}, (accessToken, refreshToken, profile, done) => {
+  // Store user information in your database or session
+  return done(null, { accessToken, profile });
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     // Specify the destination folder where uploaded files will be stored
@@ -48,7 +69,7 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage: storage });
+// const upload = multer({ storage: storage });
 
 app.use(methodOverride("_method"));
 
@@ -324,25 +345,52 @@ app.post("/admission", function (req, res) {
     });
 });
 
+
+// Redirect to GitHub for authentication
+app.get('/auth/github',
+  passport.authenticate('github', { scope: ['user:email', 'repo'] })
+);
+
+// GitHub callback URL
+app.get('/auth/github/callback',
+  passport.authenticate('github', { failureRedirect: '/' }),
+  (req, res) => {
+    // Successful authentication, redirect to gallery
+    res.redirect('/gallery');
+  }
+);
+
+const GITHUB_API_BASE = 'https://api.github.com';
 const GITHUB_REPO_OWNER = 'pvn-pragathi';
 const GITHUB_REPO_NAME = 'PVN-gallery';
-const GITHUB_ACCESS_TOKEN = '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';
 
-app.get('/gallery', async (req, res) => {
+
+// Middleware to ensure authentication
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect('/');
+}
+
+
+app.get('/gallery', ensureAuthenticated, async (req, res) => {
   try {
-    const repoContents = await getGitHubRepoContents(GITHUB_REPO_OWNER, GITHUB_REPO_NAME);
+    const accessToken = req.user.accessToken;
+
+    const repoContents = await getGitHubRepoContents(GITHUB_REPO_OWNER, GITHUB_REPO_NAME, accessToken);
 
     const folders = repoContents.filter(item => item.type === 'dir').map(item => item.name);
 
     const photos = {};
 
     for (const folder of folders) {
-      const folderContents = await getGitHubRepoContents(GITHUB_REPO_OWNER, GITHUB_REPO_NAME, folder);
+      const folderContents = await getGitHubRepoContents(GITHUB_REPO_OWNER, GITHUB_REPO_NAME, accessToken, folder);
 
       const imageFiles = folderContents.filter(item => item.type === 'file' && isImageFile(item.name));
 
       photos[folder] = await Promise.all(imageFiles.map(async item => {
-        const imageContent = await getGitHubFileContent(GITHUB_REPO_OWNER, GITHUB_REPO_NAME, item.path);
+        const imageContent = await getGitHubFileContent(GITHUB_REPO_OWNER, GITHUB_REPO_NAME, accessToken, item.path);
         return {
           name: item.name,
           base64Image: Buffer.from(imageContent, 'base64').toString('base64'),
@@ -357,24 +405,23 @@ app.get('/gallery', async (req, res) => {
   }
 });
 
-function getGitHubFileContent(owner, repo, path) {
-  const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+function getGitHubFileContent(owner, repo, accessToken, path) {
+  const apiUrl = `${GITHUB_API_BASE}/repos/${owner}/${repo}/contents/${path}`;
 
   return axios.get(apiUrl, {
     headers: {
-      Authorization: `Bearer ${GITHUB_ACCESS_TOKEN}`,
+      Authorization: `Bearer ${accessToken}`,
     },
     responseType: 'arraybuffer',
   }).then(response => Buffer.from(response.data, 'binary').toString('base64'));
 }
 
-
-function getGitHubRepoContents(owner, repo, path = '') {
-  const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+function getGitHubRepoContents(owner, repo, accessToken, path = '') {
+  const apiUrl = `${GITHUB_API_BASE}/repos/${owner}/${repo}/contents/${path}`;
 
   return axios.get(apiUrl, {
     headers: {
-      Authorization: `Bearer ${GITHUB_ACCESS_TOKEN}`,
+      Authorization: `Bearer ${accessToken}`,
     },
   }).then(response => response.data);
 }
@@ -384,6 +431,7 @@ function isImageFile(filename) {
   const ext = path.extname(filename).toLowerCase();
   return imageExtensions.includes(ext);
 }
+
 
 // const gallery_storage = multer.diskStorage({
 //   destination: function (req, file, cb) {
