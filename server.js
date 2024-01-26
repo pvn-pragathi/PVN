@@ -9,6 +9,7 @@ const http = require("http");
 const socketIO = require("socket.io");
 const Circular = require("./models/circular");
 const axios = require('axios');
+require('dotenv').config();
 const {
   populateDatabaseFromExcel,
   getLatestFilePath,
@@ -325,7 +326,7 @@ app.post("/admission", function (req, res) {
 
 const GITHUB_REPO_OWNER = 'pvn-pragathi';
 const GITHUB_REPO_NAME = 'PVN-gallery';
-const GITHUB_ACCESS_TOKEN = "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"
+const GITHUB_ACCESS_TOKEN = process.env.GITHUB_ACCESS_TOKEN;
 
 app.get('/gallery', async (req, res) => {
   try {
