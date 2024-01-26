@@ -8,9 +8,7 @@ const methodOverride = require("method-override");
 const http = require("http");
 const socketIO = require("socket.io");
 const Circular = require("./models/circular");
-const axios = require("axios");
-const passport = require("passport");
-const GitHubStrategy = require("passport-github").Strategy;
+const axios = require('axios');
 const {
   populateDatabaseFromExcel,
   getLatestFilePath,
@@ -37,9 +35,6 @@ app.use(
     saveUninitialized: true,
   })
 );
-
-app.use(passport.initialize());
-app.use(passport.session());
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -244,7 +239,7 @@ app.post("/student-login", async (req, res) => {
     if (!student) {
       student = await db
         .collection("day_students_collection")
-        .findOne({ AADHAR: aadharNumber }, { maxTimeMS: 30000 });
+        .findOne({ AADHAR: aadharNumber }, {maxTimeMS: 30000 });
     }
 
     // If still no data found, display an error message
@@ -283,7 +278,7 @@ app.post("/student-login", async (req, res) => {
       calculateGPA,
     });
   } catch (error) {
-    console.error("Error retrieving student details from the database:");
+    console.error("Error retrieving student details from the database:", error);
     return res.render("student-login", {
       message: "An error occurred. Please try again later.",
     });
@@ -328,181 +323,64 @@ app.post("/admission", function (req, res) {
     });
 });
 
-passport.serializeUser((user, done) => {
-  done(null, user);
-});
+const GITHUB_REPO_OWNER = 'pvn-pragathi';
+const GITHUB_REPO_NAME = 'PVN-gallery';
+const GITHUB_ACCESS_TOKEN = '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';
 
-passport.deserializeUser((obj, done) => {
-  done(null, obj);
-});
 
-passport.use(
-  new GitHubStrategy(
-    {
-      clientID: "3270ce0df2250c3b9cfe",
-      clientSecret: "c087dd04fb7f97a6eb69ecb50ff9248a5f470e0a",
-      callbackURL: "http://localhost:5000/auth/github/callback", // Your callback URL
-      passReqToCallback: true,
-    },
-    (req, accessToken, refreshToken, profile, done) => {
-      req.session.accessToken = accessToken;
-      req.session.profile = profile;
-      console.log(req.session.accessToken);
-      console.log("Access Token:", accessToken);
-      return done(null, { accessToken, profile });
-    }
-  )
-);
-
-app.get(
-  "/auth/github/callback",
-  passport.authenticate("github", { failureRedirect: "/" }),
-  (req, res) => {
-    // Successful authentication, redirect to gallery
-    res.redirect("/gallery");
-  }
-);
-
-const GITHUB_API_BASE = "https://api.github.com";
-const GITHUB_REPO_OWNER = "pvn-pragathi";
-const GITHUB_REPO_NAME = "PVN-gallery";
-
-app.get("/gallery", ensureAuthenticated, async (req, res) => {
+app.get('/gallery', async (req, res) => {
   try {
-    // Check if the user is authenticated
-    if (req.isAuthenticated()) {
-      // Get the access token from the session
-      const accessToken = req.session.passport.user.accessToken;
+    const repoContents = await getGitHubRepoContents(GITHUB_REPO_OWNER, GITHUB_REPO_NAME);
 
-      // Check if accessToken is present
-      if (accessToken) {
-        const repoContents = await getGitHubRepoContents(
-          GITHUB_REPO_OWNER,
-          GITHUB_REPO_NAME,
-          accessToken
-        );
+    const folders = repoContents.filter(item => item.type === 'dir').map(item => item.name);
 
-        const folders = repoContents
-          .filter((item) => item.type === "dir")
-          .map((item) => item.name);
+    const photos = {};
 
-        const photos = {};
+    for (const folder of folders) {
+      const folderContents = await getGitHubRepoContents(GITHUB_REPO_OWNER, GITHUB_REPO_NAME, folder);
 
-        for (const folder of folders) {
-          const folderContents = await getGitHubRepoContents(
-            GITHUB_REPO_OWNER,
-            GITHUB_REPO_NAME,
-            accessToken,
-            folder
-          );
+      const imageFiles = folderContents.filter(item => item.type === 'file' && isImageFile(item.name));
 
-          const imageFiles = folderContents.filter(
-            (item) => item.type === "file" && isImageFile(item.name)
-          );
-
-          photos[folder] = await Promise.all(
-            imageFiles.map(async (item) => {
-              const download_url = await getGitHubFileDownloadUrl(
-                GITHUB_REPO_OWNER,
-                GITHUB_REPO_NAME,
-                accessToken,
-                item.path
-              );
-              return {
-                name: item.name,
-                download_url: download_url,
-              };
-            })
-          );
-          
-        }
-
-        res.render("gallery", {
-          folders,
-          photos,
-          GITHUB_REPO_OWNER,
-          GITHUB_REPO_NAME,
-        });
-      } else {
-        // Redirect to GitHub authentication if accessToken is not present
-        res.redirect("/auth/github");
-      }
-    } else {
-      // Redirect to GitHub authentication if the user is not authenticated
-      res.redirect("/auth/github");
+      photos[folder] = await Promise.all(imageFiles.map(async item => {
+        const imageContent = await getGitHubFileContent(GITHUB_REPO_OWNER, GITHUB_REPO_NAME, item.path);
+        return {
+          name: item.name,
+          base64Image: Buffer.from(imageContent, 'base64').toString('base64'),
+        };
+      }));
     }
+
+    res.render('gallery', { folders, photos, GITHUB_REPO_OWNER, GITHUB_REPO_NAME });
   } catch (err) {
-    console.error("Error fetching GitHub repository contents:", err);
-    res.render("gallery", {
-      folders: [],
-      photos: {},
-      GITHUB_REPO_OWNER,
-      GITHUB_REPO_NAME,
-    });
+    console.error('Error fetching GitHub repository contents:', err);
+    res.render('gallery', { folders: [], photos: {}, GITHUB_REPO_OWNER, GITHUB_REPO_NAME });
   }
 });
 
-function getGitHubFileDownloadUrl(owner, repo, accessToken, path) {
-  const apiUrl = `${GITHUB_API_BASE}/repos/${owner}/${repo}/contents/${path}`;
+function getGitHubFileContent(owner, repo, path) {
+  const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
 
   return axios.get(apiUrl, {
     headers: {
-      Authorization: `Bearer ${accessToken}`,
+      Authorization: `Bearer ${GITHUB_ACCESS_TOKEN}`,
     },
-  })
-  .then(response => {
-    return response.data.download_url;
-  });
+    responseType: 'arraybuffer',
+  }).then(response => Buffer.from(response.data, 'binary').toString('base64'));
 }
 
 
-// Redirect to GitHub for authentication
-app.get(
-  "/auth/github",
-  passport.authenticate("github", { scope: ["user:email", "repo"] })
-);
+function getGitHubRepoContents(owner, repo, path = '') {
+  const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
 
-// Middleware to ensure authentication
-function ensureAuthenticated(req, res, next) {
-  // If the user is authenticated or accessing the /gallery route, proceed
-  if (req.isAuthenticated() || req.path === "/gallery") {
-    return next();
-  }
-  // Redirect to the login page or any other route as needed
-  res.redirect("/");
-}
-
-function getGitHubFileContent(owner, repo, accessToken, path) {
-  const apiUrl = `${GITHUB_API_BASE}/repos/${owner}/${repo}/contents/${path}`;
-
-  return axios
-    .get(apiUrl, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      responseType: "arraybuffer",
-    })
-    .then((response) => {
-      return Buffer.from(response.data, "binary").toString("base64");
-    });
-}
-
-function getGitHubRepoContents(owner, repo, accessToken, path = "") {
-  const apiUrl = `${GITHUB_API_BASE}/repos/${owner}/${repo}/contents/${path}`;
-
-  return axios
-    .get(apiUrl, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    })
-    .then((response) => {
-      return response.data;
-    });
+  return axios.get(apiUrl, {
+    headers: {
+      Authorization: `Bearer ${GITHUB_ACCESS_TOKEN}`,
+    },
+  }).then(response => response.data);
 }
 
 function isImageFile(filename) {
-  const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp"];
+  const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'];
   const ext = path.extname(filename).toLowerCase();
   return imageExtensions.includes(ext);
 }

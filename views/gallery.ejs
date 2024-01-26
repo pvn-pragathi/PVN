@@ -9,7 +9,13 @@
       <div class="d-flex justify-content-center flex-wrap">
         <% images.forEach(photo => { %>
           <div class="p-2">
-            <img src="<%= photo.download_url %>" alt="<%= photo.name %>" class="gallery-image mb-5">
+            <% try { %>
+              <% const jsonContent = JSON.parse(Buffer.from(photo.base64Image, 'base64').toString('utf-8')); %>
+              <!-- Now 'jsonContent' variable holds the extracted JSON content -->
+              <img src="<%= jsonContent.download_url %>" alt="<%= jsonContent.name %>" class="gallery-image mb-5">
+            <% } catch (error) { %>
+              <% console.error('Error parsing JSON content:', error); %>
+            <% } %>
           </div>
         <% }); %> 
       </div>
@@ -18,4 +24,3 @@
 </div>
 
 <%- include('footer') -%>
-
