@@ -342,12 +342,19 @@ app.get('/gallery', async (req, res) => {
     const response = await axios.get(apiUrl, { headers });
 
     // Extract the names and URLs of folders
-    const folders = response.data
+    let folders = response.data
       .filter(item => item.type === 'dir')
       .map(item => ({
         name: item.name,
         url: item.url,
       }));
+
+    // Sort folders in descending order based on the number in their names
+    folders = folders.sort((a, b) => {
+      const aNumber = parseInt(a.name.split('.')[0]);
+      const bNumber = parseInt(b.name.split('.')[0]);
+      return bNumber - aNumber;
+    });
 
     // Display images through download URL below each folder name
     const photos = {};
@@ -358,11 +365,19 @@ app.get('/gallery', async (req, res) => {
         .filter(item => isImageFile(item.name));
 
       // Use map to directly include download_url in the photos object
-      photos[folder.name] = imageFiles.map(async (item) => {
-        const imageDetails = await axios.get(item.url, { headers });
-        return imageDetails.data.download_url;
-      });
+      photos[folder.name] = await Promise.all(
+        imageFiles.map(async (item) => {
+          const imageDetails = await axios.get(item.url, { headers });
+          return imageDetails.data.download_url;
+        })
+      );
     }
+
+    // Modify folder names to remove the first two characters
+    folders = folders.map(folder => ({
+      name: folder.name.substring(2),  // Remove the first two characters
+      url: folder.url,
+    }));
 
     // Resolve all promises in the photos object
     const resolvedPhotos = await Promise.all(Object.values(photos).map(async (promise) => await Promise.all(promise)));
@@ -376,6 +391,8 @@ app.get('/gallery', async (req, res) => {
     res.render('gallery', { folders: [], photos: {}, GITHUB_REPO_OWNER, GITHUB_REPO_NAME });
   }
 });
+
+
 
 
 function isImageFile(filename) {
