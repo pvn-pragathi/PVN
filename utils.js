@@ -1,6 +1,7 @@
 const xlsx = require("xlsx");
 const fs = require("fs");
 const nodemailer = require("nodemailer");
+require('dotenv').config();
 
 async function populateDatabaseFromExcel(
   filePath,
@@ -128,14 +129,14 @@ function sendEmail(content) {
   const transporter = nodemailer.createTransport({
     service: "Gmail",
     auth: {
-      user: "pragathiutility@gmail.com",
-      pass: "tqbntkujmegkesmu",
+      user: "pragathi.admission@gmail.com",
+      pass: process.env.EMAIL_PASSWORD,
     },
   });
 
   const mailOptions = {
-    from: "pragathiutility@gmail.com",
-    to: "pragathiutility@gmail.com",
+    from: "pragathi.admission@gmail.com",
+    to: "pragathi.admission@gmail.com",
     subject: "New Admission",
     text: content,
   };
