@@ -499,7 +499,7 @@ app.get("/student-login", (req, res) => {
 app.get("/circulars", async (req, res) => {
   try {
     // Retrieve circulars and sort them by date in descending order
-    const circulars = await Circular.find().sort({ date: -1 });
+    const circulars = await Circular.find();
 
     // Render the circulars page with the sorted circulars
     res.render("circulars", {
