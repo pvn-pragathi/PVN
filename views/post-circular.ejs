@@ -16,6 +16,12 @@
   <div class="mb-5">
     <label class="form-label">Classes:</label>
     <div class="mb-4">
+      <label for="selectAll" class="form-label">
+        <input type="checkbox" id="selectAll" class="selectAll">
+        Select All
+      </label>
+    </div>
+    <div class="mb-4">
       <label for="lkg" class="form-label">
         <input type="checkbox" id="lkg" name="classes" value="LKG">
         LKG
@@ -61,5 +67,19 @@
     <button type="submit" class="btn btn-lg btn-primary">Post</button>
   </div>
 </form>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const selectAllCheckbox = document.getElementById("selectAll");
+    const classCheckboxes = document.querySelectorAll("[name='classes']");
+    
+    selectAllCheckbox.addEventListener("change", function () {
+      classCheckboxes.forEach(checkbox => {
+        checkbox.checked = selectAllCheckbox.checked;
+      });
+    });
+  });
+</script>
+
 
 <%- include('footer') -%>

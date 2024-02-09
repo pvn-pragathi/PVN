@@ -375,7 +375,7 @@ app.get('/gallery', async (req, res) => {
 
     // Modify folder names to remove the first two characters
     folders = folders.map(folder => ({
-      name: folder.name.substring(2),  // Remove the first two characters
+      name: folder.name.substring(3),  // Remove the first two characters
       url: folder.url,
     }));
 
@@ -498,7 +498,10 @@ app.get("/student-login", (req, res) => {
 
 app.get("/circulars", async (req, res) => {
   try {
+    // Retrieve circulars and sort them by date in descending order
     const circulars = await Circular.find().sort({ date: -1 });
+
+    // Render the circulars page with the sorted circulars
     res.render("circulars", {
       circulars,
       message: "",
@@ -513,6 +516,7 @@ app.get("/circulars", async (req, res) => {
     });
   }
 });
+
 
 app.get("/teacher-login", (req, res) => {
   res.render("teacher-login", { message: "" });
@@ -530,7 +534,18 @@ app.post("/teacher-login", (req, res) => {
   }
 });
 
-app.get("/post-circular", (req, res) => {
+const checkTeacherAuth = (req, res, next) => {
+  if (req.session.teacher) {
+    // If teacher is authenticated, proceed to the next middleware or route handler
+    next();
+  } else {
+    // If not authenticated, redirect to teacher login page
+    res.redirect("/teacher-login");
+  }
+};
+
+// Apply the middleware to the "/post-circular" route
+app.get("/post-circular", checkTeacherAuth, (req, res) => {
   res.render("post-circular", { message: "" });
 });
 
