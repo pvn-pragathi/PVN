@@ -110,7 +110,7 @@ img[alt="boquet"] {
   margin-top: 5vh;
 }
 
-#x {
+.x {
   margin: none;
   padding: none;
   width: 20vw;
@@ -148,11 +148,12 @@ img[alt="boquet"] {
   float: right;
   margin-left: 30px;
 }
+
 .feature-image-3 {
   float: left;
   margin-right: 30px;
-  width: 30vw;
 }
+
 .features-section div {
   width: 70%;
   height: max-content;
@@ -396,7 +397,7 @@ td {
     margin-bottom: 5vh !important;
   }
 
-  #clickhere {
+  .clickhere {
     margin-top: -2.5vh;
     margin-bottom: 5vh !important;
   }

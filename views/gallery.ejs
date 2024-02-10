@@ -10,7 +10,7 @@
         <div class="d-flex justify-content-center flex-wrap">
           <% images.forEach(photo => { %>
             <div class="p-2">
-              <img src="<%= photo %>" alt="<%= photo.name %>" class="gallery-image mb-5">
+              <img src="<%= photo %>" alt="<%= photo.name %>" class="gallery-image mb-5" loading="lazy">
             </div>
           <% }); %> 
         </div>

@@ -2,14 +2,14 @@ function validateForm(event) {
   var aadhaarNumber = document.getElementById("aadhar").value;
   var contact1 = document.getElementById("contact-1").value;
   var contact2 = document.getElementById("contact-2").value;
-  var aadhaarPattern = /^\d{4}\s\d{4}\s\d{4}$/; // Aadhaar card format: XXXX XXXX XXXX
+  var aadhaarPattern = /^\d{12}$/;
   var contactPattern = /^\d{10}$/; // Contact number format: 10 digits
   var errors = 0;
 
   var aadhaarError = document.getElementById("aadhaarError");
   if (!aadhaarPattern.test(aadhaarNumber)) {
     aadhaarError.textContent =
-      "Please enter a valid Aadhaar card number in the format XXXX XXXX XXXX.";
+      "Please enter a valid Aadhaar card number in the format XXXXXXXXXXXX.";
     errors++;
   } else {
     aadhaarError.textContent = "";
