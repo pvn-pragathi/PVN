@@ -7,6 +7,10 @@ body p {
   font-size: 2.5vh;
 }
 
+.pvn-logo{
+  width: 8vw;
+}
+
 .h1 {
   text-align: center;
   margin: 5vh auto;
@@ -351,9 +355,11 @@ td {
   margin-top: 10px;
 }
 
+
 @media screen and (max-width: 992px) {
   .pvn-logo {
     margin-left: 3px !important;
+    width: 100px;
   }
 
   .nav-link {
@@ -432,7 +438,8 @@ td {
   }
 
   .features-section div img {
-    height: 50vh;
+    height: auto;
+    width: 70vw;
     border-radius: 10px;
   }
 

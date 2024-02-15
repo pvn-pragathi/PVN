@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const session = require("express-session");
+const excel = require("exceljs");
 const multer = require("multer");
 const fs = require("fs");
 const mongoose = require("mongoose");
@@ -306,23 +307,72 @@ app.get("/admission", function (req, res) {
   res.render("admission", { submitted, error });
 });
 
-app.post("/admission", function (req, res) {
-  const formData = req.body;
-  const formattedData = `Name: ${formData.studentname}\nMother Name: ${formData.mothername}\nFather Name: ${formData.fathername}\nStudent age: ${formData.age}\nDOB: ${formData.dob}\nAdmission Class: ${formData.admissioninto}\nAddress: ${formData.address}\nAadhar No: ${formData.aadhar}\nContact-1: ${formData.contact1}\nContact-2: ${formData.contact2}`;
+app.post("/admission", async function (req, res) {
+  try {
+    const formData = req.body;
+    const formattedData = `Name: ${formData.studentname}\nMother Name: ${formData.mothername}\nFather Name: ${formData.fathername}\nStudent age: ${formData.age}\nDOB: ${formData.dob}\nAdmission Class: ${formData.admissioninto}\nAddress: ${formData.address}\nContact Address: ${formData.contact_address}\nAadhar No: ${formData.aadhar}\nContact-1: ${formData.contact1}\nContact-2: ${formData.contact2}`;
 
-  sendEmail(formattedData)
-    .then(() => {
-      // Set a flag to indicate successful form submission
-      req.session.submitted = true;
-      res.redirect("/admission");
-    })
-    .catch((error) => {
-      console.error("Error sending email:", error);
-      // Set an error flag to indicate form submission error
-      req.session.error = true;
-      res.redirect("/admission");
-    });
+    // Send email with formatted data
+    await sendEmail(formattedData);
+
+    // Update existing Excel file in the public folder
+    const excelFilePath = path.join(__dirname, "public", "existing_data.xlsx");
+    await updateExcelFile(excelFilePath, formData);
+
+    // Set a flag to indicate successful form submission
+    req.session.submitted = true;
+    res.redirect("/admission");
+  } catch (error) {
+    console.error("Error handling form submission:", error);
+    // Set an error flag to indicate form submission error
+    req.session.error = true;
+    res.redirect("/admission");
+  }
 });
+
+app.get("/admin/admissions", function (req, res) {
+  const excelFilePath = path.join(__dirname, "public", "existing_data.xlsx");
+
+  // Set the appropriate headers for file download
+  res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+  res.setHeader("Content-Disposition", "attachment; filename=existing_data.xlsx");
+
+  // Stream the file to the response
+  const fileStream = fs.createReadStream(excelFilePath);
+  fileStream.pipe(res);
+});
+
+async function updateExcelFile(excelFilePath, formData) {
+  const workbook = new excel.Workbook();
+
+  try {
+    // Attempt to read the existing file
+    await workbook.xlsx.readFile(excelFilePath);
+  } catch (error) {
+    // If the file doesn't exist, create a new workbook
+    console.error("Error reading existing file:", error);
+  }
+
+  const worksheet = workbook.getWorksheet(1);
+
+  // If the worksheet is empty, add headers
+  if (worksheet.rowCount === 0) {
+    worksheet.addRow(Object.keys(formData));
+  }
+
+  // Add a new row with form data
+  const newRow = worksheet.addRow(Object.values(formData));
+
+  // Optionally, you can customize formatting or perform additional operations on the new row
+
+  try {
+    // Save the updated workbook
+    await workbook.xlsx.writeFile(excelFilePath);
+    console.log("Excel file updated successfully.");
+  } catch (error) {
+    console.error("Error saving updated workbook:", error);
+  }
+}
 
 
 const GITHUB_REPO_OWNER = 'pvn-pragathi';
@@ -588,6 +638,10 @@ app.delete("/circulars/:id", async (req, res) => {
   } else {
     res.redirect("/teacher-login");
   }
+});
+
+app.use((req, res, next) => {
+  res.status(404).render('404'); // Render the 404 EJS view
 });
 
 app.listen(PORT, function () {

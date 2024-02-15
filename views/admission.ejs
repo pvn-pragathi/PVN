@@ -3,7 +3,7 @@
 <h1 class="h1">Online Admission Form</h1>
 
 <div id="click-fee" class="mb-2 mt-2">
-  <a href="/fee">Click here to view fee structure</a>
+  <a href="/fee" class="btn btn-primary">Click here to view fee structure</a>
 </div>
 
 <% if (submitted) { %>
@@ -73,7 +73,12 @@
 
   <div class="mb-5">
     <label for="address" class="form-label">Residential Address : </label>
-    <textarea id="address" name="address" cols="40" required name="address"></textarea>
+    <textarea id="address" cols="40" name="address" required></textarea>
+  </div>
+
+  <div class="mb-5">
+    <label for="contact_address" class="form-label">Contact Address : </label>
+    <textarea id="contact_address" cols="40" name="contact_address" required></textarea>
   </div>
 
   <div class="mb-4">
