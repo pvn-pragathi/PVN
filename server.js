@@ -20,6 +20,7 @@ const {
   calculatePoints,
   calculateOverallGrade,
   calculateGPA,
+  updateExcelFile
 } = require("./utils");
 const PORT = process.env.PORT || 5000;
 const path = require("path");
@@ -37,6 +38,70 @@ app.use(
     saveUninitialized: true,
   })
 );
+
+const authorizedUsers = {
+  username: 'chiefguest',
+  password: 'launch123',
+};
+
+// Middleware to check if the user is authenticated
+const authenticate = (req, res, next) => {
+  const { username, password } = req.body;
+  if (username === authorizedUsers.username && password === authorizedUsers.password) {
+    // Authentication successful
+    return next();
+  }
+  // Authentication failed
+  res.redirect('/login?error=true');
+};
+
+// Middleware to redirect unauthorized users to login page
+const requireAuth = (req, res, next) => {
+  const isAuthenticated = req.session.isAuthenticated || false;
+  if (!isAuthenticated) {
+    return res.redirect('/login');
+  }
+  next();
+};
+
+// Login route (exclude from maintenance middleware)
+app.get('/login', (req, res) => {
+  const error = req.query.error === 'true';
+  res.render('login', { error });
+});
+
+// Authenticate and set session on login
+app.post('/login', (req, res) => {
+  const { username, password } = req.body;
+  if (username === authorizedUsers.username && password === authorizedUsers.password) {
+    req.session.isAuthenticated = true;
+    return res.redirect('/launch-portal');
+  }
+  res.redirect('/login?error=true');
+});
+
+// Launch portal route (requires authentication)
+app.get('/launch-portal', requireAuth, (req, res) => {
+  res.render('launch-portal');
+});
+
+let isUnderMaintenance = true;
+
+// Assuming you are using Express
+app.post('/toggle-maintenance', (req, res) => {
+  isUnderMaintenance = !isUnderMaintenance;
+  res.json({ status: 'success', isUnderMaintenance });
+});
+
+app.use((req, res, next) => {
+  if (isUnderMaintenance) {
+    return res.render('maintenance'); // Display maintenance page
+  }
+  next();
+});
+
+
+
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -342,37 +407,6 @@ app.get("/admin/admissions", function (req, res) {
   fileStream.pipe(res);
 });
 
-async function updateExcelFile(excelFilePath, formData) {
-  const workbook = new excel.Workbook();
-
-  try {
-    // Attempt to read the existing file
-    await workbook.xlsx.readFile(excelFilePath);
-  } catch (error) {
-    // If the file doesn't exist, create a new workbook
-    console.error("Error reading existing file:", error);
-  }
-
-  const worksheet = workbook.getWorksheet(1);
-
-  // If the worksheet is empty, add headers
-  if (worksheet.rowCount === 0) {
-    worksheet.addRow(Object.keys(formData));
-  }
-
-  // Add a new row with form data
-  const newRow = worksheet.addRow(Object.values(formData));
-
-  // Optionally, you can customize formatting or perform additional operations on the new row
-
-  try {
-    // Save the updated workbook
-    await workbook.xlsx.writeFile(excelFilePath);
-    console.log("Excel file updated successfully.");
-  } catch (error) {
-    console.error("Error saving updated workbook:", error);
-  }
-}
 
 
 const GITHUB_REPO_OWNER = 'pvn-pragathi';

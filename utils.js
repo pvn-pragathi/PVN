@@ -144,6 +144,38 @@ function sendEmail(content) {
   return transporter.sendMail(mailOptions);
 }
 
+async function updateExcelFile(excelFilePath, formData) {
+  const workbook = new excel.Workbook();
+
+  try {
+    // Attempt to read the existing file
+    await workbook.xlsx.readFile(excelFilePath);
+  } catch (error) {
+    // If the file doesn't exist, create a new workbook
+    console.error("Error reading existing file:", error);
+  }
+
+  const worksheet = workbook.getWorksheet(1);
+
+  // If the worksheet is empty, add headers
+  if (worksheet.rowCount === 0) {
+    worksheet.addRow(Object.keys(formData));
+  }
+
+  // Add a new row with form data
+  const newRow = worksheet.addRow(Object.values(formData));
+
+  // Optionally, you can customize formatting or perform additional operations on the new row
+
+  try {
+    // Save the updated workbook
+    await workbook.xlsx.writeFile(excelFilePath);
+  } catch (error) {
+    console.error("Error saving updated workbook:", error);
+  }
+}
+
+
 function calculateGrade(marks) {
   if (marks >= 91 / 5) {
     return "A1";
@@ -231,4 +263,5 @@ module.exports = {
   calculatePoints,
   calculateOverallGrade,
   calculateGPA,
+  updateExcelFile
 };
