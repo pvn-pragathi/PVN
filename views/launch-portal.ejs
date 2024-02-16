@@ -1,117 +1,151 @@
-<%- include('header') -%>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="google-site-verification" content="1GinM3J5V4g9kv9gE4gvD7ZzVhzmjXB35CCp80JwPt4" />
+        <meta name="description" content="Nurturing Minds, Igniting Curiosity, and Inspiring Lifelong Learners. Admissions open for the year 2024-25 from LKG to 9th
+        class.">
+    
+        <title>Pragathi Vidyaniketan</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+        <link rel="stylesheet" href="css/style.css">
+        <link rel="icon" type="image/x-icon" href="favicon.ico"/>
+    
+        <link rel="shortcut icon" href="images/favicons/favicon.ico" type="image/x-icon" />
+        <link rel="apple-touch-icon" href="images/favicons/apple-touch-icon.png" />
+        <link rel="apple-touch-icon" sizes="57x57" href="images/favicons/apple-touch-icon-57x57.png" />
+        <link rel="apple-touch-icon" sizes="72x72" href="images/favicons/apple-touch-icon-72x72.png" />
+        <link rel="apple-touch-icon" sizes="76x76" href="images/favicons/apple-touch-icon-76x76.png" />
+        <link rel="apple-touch-icon" sizes="114x114" href="images/favicons/apple-touch-icon-114x114.png" />
+        <link rel="apple-touch-icon" sizes="120x120" href="images/favicons/apple-touch-icon-120x120.png" />
+        <link rel="apple-touch-icon" sizes="144x144" href="images/favicons/apple-touch-icon-144x144.png" />
+        <link rel="apple-touch-icon" sizes="152x152" href="images/favicons/apple-touch-icon-152x152.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="images/favicons/apple-touch-icon-180x180.png" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Anton&family=Great+Vibes&family=Pacifico&family=Roboto:wght@900&display=swap" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        </head>
+<body>
+    <div class="launch-portal-container">
+        <img
+          class="rounded mx-auto d-block"
+          src="images/launch.png"
+          id="launch-button"
+          onclick="startLaunch()"
+          alt="Launch Now"
+          width="40%"
+          style="cursor: pointer"
+        />
+        <div id="fireworks-container" class="fireworks"></div>
+      
+        <!-- Full-sized overlay for the video -->
+        <div
+          id="video-overlay"
+          style="
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            z-index: 100;
+          "
+        >
+          <video
+            id="launch-video"
+            width="640"
+            height="360"
+            controls
+            style="width: 100%; height: 100%"
+          >
+            <source src="videos/launch.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      </div>
+      
+      <script>
+        async function startLaunch() {
+      
+          // Wait for 3 seconds
+          await new Promise(resolve => setTimeout(resolve, 1000));
+      
+          const launchButton = document.getElementById("launch-button");
+          const videoOverlay = document.getElementById("video-overlay");
+          const videoElement = document.getElementById("launch-video");
+      
+          try {
+              const response = await fetch("/toggle-maintenance", { method: "POST" });
+      
+              if (response.ok) {
+                  const result = await response.json();
+                  console.log("Maintenance mode toggled:", result.isUnderMaintenance);
+              } else {
+                  console.error("Failed to toggle maintenance mode:", response.statusText);
+              }
+          } catch (error) {
+              console.error("Error toggling maintenance mode:", error.message);
+          }
+      
+          launchButton.disabled = true;
+      
+          // Display the video overlay
+          videoOverlay.style.display = "block";
+      
+      
+          // Request fullscreen for the video overlay
+          if (videoOverlay.requestFullscreen) {
+              videoOverlay.requestFullscreen();
+          } else if (videoOverlay.mozRequestFullScreen) {
+              videoOverlay.mozRequestFullScreen();
+          } else if (videoOverlay.webkitRequestFullscreen) {
+              videoOverlay.webkitRequestFullscreen();
+          } else if (videoOverlay.msRequestFullscreen) {
+              videoOverlay.msRequestFullscreen();
+          }
+      
+          // Play the video programmatically
+          videoElement.play();
+      
+          // Hide video controls
+          videoElement.controls = false;
+      
+          // Wait for the video to end
+          await new Promise(resolve => {
+              videoElement.onended = resolve;
+          });
+      
+          // Exit fullscreen
+          if (document.exitFullscreen) {
+              document.exitFullscreen();
+          } else if (document.mozCancelFullScreen) {
+              document.mozCancelFullScreen();
+          } else if (document.webkitExitFullscreen) {
+              document.webkitExitFullscreen();
+          } else if (document.msExitFullscreen) {
+              document.msExitFullscreen();
+          }
+      
+          // Hide the video overlay
+          videoOverlay.style.display = "none";
+      
+          // Enable the launch button
+          launchButton.disabled = false;
+      
+          // Redirect to the main page
+          window.location.href = '/';
+      }
+      
+      
+      </script>
+      <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js" integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS" crossorigin="anonymous"></script>
+      <script src="script.js"></script>
+      
+</body>
+</html>
 
-<div class="launch-portal-container">
-  <img
-    class="rounded mx-auto d-block"
-    src="images/launch.png"
-    id="launch-button"
-    onclick="startLaunch()"
-    alt="Launch Now"
-    width="40%"
-    style="cursor: pointer"
-  />
-  <div id="fireworks-container" class="fireworks"></div>
-
-  <!-- Full-sized overlay for the video -->
-  <div
-    id="video-overlay"
-    style="
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: black;
-      z-index: 100;
-    "
-  >
-    <video
-      id="launch-video"
-      width="640"
-      height="360"
-      controls
-      style="width: 100%; height: 100%"
-    >
-      <source src="videos/launch.mp4" type="video/mp4" />
-      Your browser does not support the video tag.
-    </video>
-  </div>
-</div>
-
-<script>
-  async function startLaunch() {
-
-    // Wait for 3 seconds
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    const launchButton = document.getElementById("launch-button");
-    const videoOverlay = document.getElementById("video-overlay");
-    const videoElement = document.getElementById("launch-video");
-
-    try {
-        const response = await fetch("/toggle-maintenance", { method: "POST" });
-
-        if (response.ok) {
-            const result = await response.json();
-            console.log("Maintenance mode toggled:", result.isUnderMaintenance);
-        } else {
-            console.error("Failed to toggle maintenance mode:", response.statusText);
-        }
-    } catch (error) {
-        console.error("Error toggling maintenance mode:", error.message);
-    }
-
-    launchButton.disabled = true;
-
-    // Display the video overlay
-    videoOverlay.style.display = "block";
-
-
-    // Request fullscreen for the video overlay
-    if (videoOverlay.requestFullscreen) {
-        videoOverlay.requestFullscreen();
-    } else if (videoOverlay.mozRequestFullScreen) {
-        videoOverlay.mozRequestFullScreen();
-    } else if (videoOverlay.webkitRequestFullscreen) {
-        videoOverlay.webkitRequestFullscreen();
-    } else if (videoOverlay.msRequestFullscreen) {
-        videoOverlay.msRequestFullscreen();
-    }
-
-    // Play the video programmatically
-    videoElement.play();
-
-    // Hide video controls
-    videoElement.controls = false;
-
-    // Wait for the video to end
-    await new Promise(resolve => {
-        videoElement.onended = resolve;
-    });
-
-    // Exit fullscreen
-    if (document.exitFullscreen) {
-        document.exitFullscreen();
-    } else if (document.mozCancelFullScreen) {
-        document.mozCancelFullScreen();
-    } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-    } else if (document.msExitFullscreen) {
-        document.msExitFullscreen();
-    }
-
-    // Hide the video overlay
-    videoOverlay.style.display = "none";
-
-    // Enable the launch button
-    launchButton.disabled = false;
-
-    // Redirect to the main page
-    window.location.href = '/';
-}
-
-
-</script>
-
-<%- include('footer') -%>
