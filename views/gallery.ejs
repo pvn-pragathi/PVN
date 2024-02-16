@@ -4,7 +4,7 @@
 
 <div class="gallery container">
   <% try { %>
-    <% Object.entries(photos).forEach(([folder, images]) => { %>
+    <% Object.entries(photos).reverse().forEach(([folder, images]) => { %>
       <div class="album-section">
         <h2 class="h1"><%= folder %></h2>
         <div class="d-flex justify-content-center flex-wrap">

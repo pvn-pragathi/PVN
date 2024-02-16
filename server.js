@@ -416,66 +416,46 @@ const GITHUB_ACCESS_TOKEN = process.env.GITHUB_ACCESS_TOKEN;
 
 app.get('/gallery', async (req, res) => {
   try {
-    // Send a request to the GitHub API to get repository contents
     const apiUrl = `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/contents/`;
-
-    // Include authorization header with the access token
     const headers = {
       Authorization: `Bearer ${GITHUB_ACCESS_TOKEN}`,
     };
 
     const response = await axios.get(apiUrl, { headers });
 
-    // Extract the names and URLs of folders
-    let folders = response.data
+    const folders = response.data
       .filter(item => item.type === 'dir')
       .map(item => ({
-        name: item.name,
+        name: item.name.substring(3),  // Remove the first two characters
         url: item.url,
-      }));
+      }))
+      .sort((a, b) => parseInt(b.name.split('.')[0]) - parseInt(a.name.split('.')[0]));
 
-    // Sort folders in descending order based on the number in their names
-    folders = folders.sort((a, b) => {
-      const aNumber = parseInt(a.name.split('.')[0]);
-      const bNumber = parseInt(b.name.split('.')[0]);
-      return bNumber - aNumber;
-    });
-
-    // Display images through download URL below each folder name
-    const photos = {};
-    for (const folder of folders) {
+    const folderPromises = folders.map(async (folder) => {
       const folderContents = await axios.get(folder.url, { headers });
       const imageFiles = folderContents.data
         .filter(item => item.type === 'file')
         .filter(item => isImageFile(item.name));
 
-      // Use map to directly include download_url in the photos object
-      photos[folder.name] = await Promise.all(
-        imageFiles.map(async (item) => {
-          const imageDetails = await axios.get(item.url, { headers });
-          return imageDetails.data.download_url;
-        })
-      );
-    }
+      const imagePromises = imageFiles.map(async (item) => {
+        const imageDetails = await axios.get(item.url, { headers });
+        return imageDetails.data.download_url;
+      });
 
-    // Modify folder names to remove the first two characters
-    folders = folders.map(folder => ({
-      name: folder.name.substring(3),  // Remove the first two characters
-      url: folder.url,
-    }));
+      return { name: folder.name, images: await Promise.all(imagePromises) };
+    });
 
-    // Resolve all promises in the photos object
-    const resolvedPhotos = await Promise.all(Object.values(photos).map(async (promise) => await Promise.all(promise)));
+    const resolvedFolders = await Promise.all(folderPromises);
 
-    // Combine folder names with resolved download URLs
-    const combinedPhotos = Object.fromEntries(folders.map((folder, index) => [folder.name, resolvedPhotos[index]]));
+    const photos = Object.fromEntries(resolvedFolders.map(folder => [folder.name, folder.images]));
 
-    res.render('gallery', { folders, photos: combinedPhotos, GITHUB_REPO_OWNER, GITHUB_REPO_NAME });
+    res.render('gallery', { folders, photos, GITHUB_REPO_OWNER, GITHUB_REPO_NAME });
   } catch (err) {
     console.error('Error fetching GitHub repository contents:', err);
     res.render('gallery', { folders: [], photos: {}, GITHUB_REPO_OWNER, GITHUB_REPO_NAME });
   }
 });
+
 
 
 
