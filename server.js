@@ -90,6 +90,7 @@ let isUnderMaintenance = true;
 // Assuming you are using Express
 app.post('/toggle-maintenance', (req, res) => {
   isUnderMaintenance = !isUnderMaintenance;
+  console.log("Toggled");
   res.json({ status: 'success', isUnderMaintenance });
 });
 
