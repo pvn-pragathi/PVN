@@ -2,6 +2,7 @@ const xlsx = require("xlsx");
 const fs = require("fs");
 const nodemailer = require("nodemailer");
 require('dotenv').config();
+const excel = require("exceljs");
 
 async function populateDatabaseFromExcel(
   filePath,

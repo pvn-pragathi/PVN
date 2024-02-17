@@ -40,8 +40,8 @@ app.use(
 );
 
 const authorizedUsers = {
-  username: 'chiefguest',
-  password: 'launch123',
+  username: 'PVN-website-launch',
+  password: 'Pragathi@12345@launch',
 };
 
 // Middleware to check if the user is authenticated

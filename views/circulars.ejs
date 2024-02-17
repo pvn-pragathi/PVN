@@ -6,7 +6,7 @@
 <% if (circulars.length === 0) { %>
   <p class="h1">No circulars found.</p>
 <% } else { %>
-  <% circulars.reverse().forEach(function(circular) { %>
+  <% circulars.reverse().forEach(function (circular) { %>
     <div class="circular mb-5">
       <h3 class="mb-5"><%= circular.title %></h3>
       <p><strong>For Classes:</strong> <%= circular.classes.join(', ') %></p>

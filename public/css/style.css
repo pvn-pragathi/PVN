@@ -1,8 +1,12 @@
+body{
+  padding-top: 10vh;
+}
+
 .anton {
   font-family: "Anton", sans-serif !important;
 }
 
-body p {
+body p , .content-paragraph p ul li{
   font-family: "Work Sans", sans-serif;
   font-size: 2.5vh;
 }
@@ -23,13 +27,15 @@ body p {
 }
 
 .h2 {
-  margin: 5vh;
+  margin: 2vh;
   font-weight: bold;
 }
 
 nav,
 .navbar {
   background-image: linear-gradient(120deg, #c2e9fb 0%, #a1c4fd 100%);
+  min-height: 100px;
+  height: 10vh;
 }
 
 .dropdown-menu {
@@ -45,7 +51,7 @@ nav,
   margin: auto 1vw;
   color: black !important;
 }
-
+  
 .carousel,
 .carousel-inner {
   background-image: linear-gradient(120deg, #c2e9fb 0%, #a1c4fd 100%);
@@ -178,6 +184,7 @@ h2 {
   color: rgb(71, 71, 215);
   font-family: "Open Sans", sans-serif;
   font-weight: 500;
+ 
 }
 
 .main-heading {
@@ -254,19 +261,17 @@ footer {
   text-align: center;
   color: rgb(2, 207, 2);
   margin: 3vh auto;
-  font-size: 1vw;
 }
 
 .error-message {
   text-align: center;
   color: red;
-  margin: 3vh auto;
-  font-size: 1vw;
+  margin: 3vh auto;           
 }
 
 .content-paragraph {
   text-indent: 3vw;
-  margin: auto 13vw;
+  margin: auto 5vw;
   line-height: 1.8;
 }
 
@@ -375,15 +380,16 @@ td {
     display: block;
     text-align: left;
     margin: auto;
-    margin-left: 15vw;
+    margin: 15vw;
     width: 70vw;
     margin-top: -10vh;
+    height: max-content;
   }
 
   .carousel-item span h1,
   #iit {
     width: 80vw !important;
-    font-size: 3rem !important;
+    font-size: 2.5rem !important;
   }
 
   #gs {
@@ -474,10 +480,6 @@ td {
 
   .features-section div {
     line-height: 1.5;
-  }
-
-  .carousel-item span {
-    height: max-content;
   }
 
   .admission-form {
