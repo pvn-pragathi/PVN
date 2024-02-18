@@ -94,12 +94,12 @@ app.post('/toggle-maintenance', (req, res) => {
   res.json({ status: 'success', isUnderMaintenance });
 });
 
-app.use((req, res, next) => {
-  if (isUnderMaintenance) {
-    return res.render('maintenance'); // Display maintenance page
-  }
-  next();
-});
+// app.use((req, res, next) => {
+//   if (isUnderMaintenance) {
+//     return res.render('maintenance'); // Display maintenance page
+//   }
+//   next();
+// });
 
 
 
