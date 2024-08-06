@@ -32,6 +32,7 @@
     "passport-github": "^1.1.0",
     "passport-local": "^1.0.0",
     "path": "^0.12.7",
+    "pragathi-vidyaniketan": "file:",
     "request": "^2.88.2",
     "socket.io": "^4.6.2",
     "xlsx": "^0.18.5",
